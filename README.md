@@ -15,6 +15,14 @@ Additionally, there is an Angular 1.5 version of this codebase that you can [for
 
 We're currently working on some docs for the codebase (explaining where functionality is located, how it works, etc) but the codebase should be straightforward to follow as is. We've also released a [step-by-step tutorial w/ screencasts](https://thinkster.io/tutorials/building-real-world-angular-2-apps) that teaches you how to recreate the codebase from scratch.
 
+# Changelog
+
+This repo is forked from [gothinkster/angular-realworld-example-app](https://github.com/gothinkster/angular-realworld-example-app)
+
+1. Data fetched in reactive
+2. Change detection strategy OnPush is used
+3. Created tags sidebar component
+
 # Getting started
 
 Make sure you have the [Angular CLI](https://github.com/angular/angular-cli#installation) installed globally. You can `npm install` to resolve all dependencies (should take a couple of seconds).

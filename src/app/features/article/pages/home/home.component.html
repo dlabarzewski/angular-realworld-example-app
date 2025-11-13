@@ -36,22 +36,8 @@
         <app-article-list [limit]="10" [config]="listConfig" />
       </div>
 
-      <div class="col-md-3" *rxLet="tags$; let tags">
-        <div class="sidebar">
-          <p>Popular Tags</p>
-
-          <div class="tag-list">
-            @for (tag of tags; track tag) {
-              <a class="tag-default tag-pill" (click)="setListTo('all', { tag: tag })">
-                {{ tag }}
-              </a>
-            }
-          </div>
-
-          <div [hidden]="tagsLoaded">Loading tags...</div>
-
-          <div [hidden]="!tagsLoaded || tags.length > 0">No tags are here... yet.</div>
-        </div>
+      <div class="col-md-3">
+        <app-tags-sidebar (tagClick)="setListTo('all', { tag: $event })" />
       </div>
     </div>
   </div>
