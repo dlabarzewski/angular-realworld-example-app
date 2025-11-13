@@ -1,7 +1,7 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, inject, Input, Output } from '@angular/core';
 import { Router } from '@angular/router';
-import { EMPTY, switchMap, take } from 'rxjs';
-import { NgClass } from '@angular/common';
+import { BehaviorSubject, EMPTY, switchMap, take } from 'rxjs';
+import { AsyncPipe, NgClass } from '@angular/common';
 import { ArticlesService } from '../services/articles.service';
 import { UserService } from '../../../core/auth/services/user.service';
 import { Article } from '../models/article.model';
@@ -12,7 +12,7 @@ import { Article } from '../models/article.model';
     <button
       class="btn btn-sm"
       [ngClass]="{
-        disabled: isSubmitting,
+        disabled: isSubmitting$ | async,
         'btn-outline-primary': !article.favorited,
         'btn-primary': article.favorited,
       }"
@@ -21,22 +21,21 @@ import { Article } from '../models/article.model';
       <i class="ion-heart"></i> <ng-content></ng-content>
     </button>
   `,
-  imports: [NgClass],
+  imports: [NgClass, AsyncPipe],
 })
 export class FavoriteButtonComponent {
-  isSubmitting = false;
+  private readonly isSubmittingSubject = new BehaviorSubject<boolean>(false);
+  protected readonly isSubmitting$ = this.isSubmittingSubject.asObservable();
 
   @Input() article!: Article;
   @Output() toggle = new EventEmitter<boolean>();
 
-  constructor(
-    private readonly articleService: ArticlesService,
-    private readonly router: Router,
-    private readonly userService: UserService,
-  ) {}
+  private readonly articleService = inject(ArticlesService);
+  private readonly router = inject(Router);
+  private readonly userService = inject(UserService);
 
   toggleFavorite(): void {
-    this.isSubmitting = true;
+    this.isSubmittingSubject.next(true);
 
     this.userService.isAuthenticated
       .pipe(
@@ -56,10 +55,10 @@ export class FavoriteButtonComponent {
       )
       .subscribe({
         next: () => {
-          this.isSubmitting = false;
+          this.isSubmittingSubject.next(false);
           this.toggle.emit(!this.article.favorited);
         },
-        error: () => (this.isSubmitting = false),
+        error: () => this.isSubmittingSubject.next(false),
       });
   }
 }
