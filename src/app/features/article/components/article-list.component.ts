@@ -1,4 +1,4 @@
-import { Component, DestroyRef, inject, Input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, Input } from '@angular/core';
 import { ArticlesService } from '../services/articles.service';
 import { ArticleListConfig } from '../models/article-list-config.model';
 import { Article } from '../models/article.model';
@@ -11,10 +11,10 @@ import { BehaviorSubject, map, Observable, switchMap, tap } from 'rxjs';
   selector: 'app-article-list',
   template: `
     @if (results$ | async; as results) {
-      @if (loading === LoadingState.LOADING) {
+      @if ((loading$ | async) === LoadingState.LOADING) {
         <div class="article-preview">Loading articles...</div>
       }
-      @if (loading === LoadingState.LOADED) {
+      @if ((loading$ | async) === LoadingState.LOADED) {
         @for (article of results; track article.slug) {
           <app-article-preview [article]="article" />
         } @empty {
@@ -23,7 +23,7 @@ import { BehaviorSubject, map, Observable, switchMap, tap } from 'rxjs';
 
         <nav>
           <ul class="pagination">
-            @for (pageNumber of totalPages; track pageNumber) {
+            @for (pageNumber of totalPages$ | async; track pageNumber) {
               <li class="page-item" [ngClass]="{ active: pageNumber === (currentPage$ | async) }">
                 <button class="page-link" (click)="setPageTo(pageNumber)">
                   {{ pageNumber }}
@@ -41,9 +41,16 @@ import { BehaviorSubject, map, Observable, switchMap, tap } from 'rxjs';
       cursor: pointer;
     }
   `,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ArticleListComponent {
   private readonly articlesService = inject(ArticlesService);
+
+  private readonly totalPagesSubject = new BehaviorSubject<number[]>([]);
+  protected readonly totalPages$ = this.totalPagesSubject.asObservable();
+
+  private readonly loadingSubject = new BehaviorSubject<LoadingState>(LoadingState.NOT_LOADED);
+  protected readonly loading$ = this.loadingSubject.asObservable();
 
   private readonly querySubject = new BehaviorSubject<ArticleListConfig>({
     type: 'all',
@@ -54,7 +61,7 @@ export class ArticleListComponent {
   protected readonly currentPage$ = this.query$.pipe(map(query => query.currentPage ?? 1));
 
   protected readonly results$: Observable<Article[]> = this.query$.pipe(
-    tap(() => (this.loading = LoadingState.LOADING)),
+    tap(() => this.loadingSubject.next(LoadingState.LOADING)),
     switchMap(query => {
       if (this.limit) {
         query.filters.limit = this.limit;
@@ -63,18 +70,17 @@ export class ArticleListComponent {
       return this.articlesService.query(query);
     }),
     tap(data => {
-      this.loading = LoadingState.LOADED;
+      this.loadingSubject.next(LoadingState.LOADED);
 
       // Used from http://www.jstips.co/en/create-range-0...n-easily-using-one-line/
-      this.totalPages = Array.from(new Array(Math.ceil(data.articlesCount / this.limit)), (val, index) => index + 1);
+      this.totalPagesSubject.next(
+        Array.from(new Array(Math.ceil(data.articlesCount / this.limit)), (val, index) => index + 1),
+      );
     }),
     map(data => data.articles),
   );
 
-  totalPages: Array<number> = [];
-  loading = LoadingState.NOT_LOADED;
-  LoadingState = LoadingState;
-  destroyRef = inject(DestroyRef);
+  protected readonly LoadingState = LoadingState;
 
   @Input() limit!: number;
   @Input()
