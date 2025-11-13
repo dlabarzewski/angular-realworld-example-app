@@ -8,4 +8,6 @@ export interface ArticleListConfig {
     limit?: number;
     offset?: number;
   };
+
+  currentPage?: number;
 }
