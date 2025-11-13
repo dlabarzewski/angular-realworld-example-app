@@ -11,7 +11,7 @@ import { AsyncPipe, NgClass } from '@angular/common';
 import { MarkdownPipe } from '../../../../shared/pipes/markdown.pipe';
 import { ListErrorsComponent } from '../../../../shared/components/list-errors.component';
 import { ArticleCommentComponent } from '../../components/article-comment.component';
-import { catchError } from 'rxjs/operators';
+import { catchError, take } from 'rxjs/operators';
 import { combineLatest, throwError } from 'rxjs';
 import { Comment } from '../../models/comment.model';
 import { IfAuthenticatedDirective } from '../../../../core/auth/if-authenticated.directive';
@@ -97,7 +97,7 @@ export default class ArticleComponent implements OnInit {
 
     this.articleService
       .delete(this.article.slug)
-      .pipe(takeUntilDestroyed(this.destroyRef))
+      .pipe(take(1))
       .subscribe(() => {
         void this.router.navigate(['/']);
       });
@@ -109,7 +109,7 @@ export default class ArticleComponent implements OnInit {
 
     this.commentsService
       .add(this.article.slug, this.commentControl.value)
-      .pipe(takeUntilDestroyed(this.destroyRef))
+      .pipe(take(1))
       .subscribe({
         next: comment => {
           this.comments.unshift(comment);
@@ -126,7 +126,7 @@ export default class ArticleComponent implements OnInit {
   deleteComment(comment: Comment): void {
     this.commentsService
       .delete(comment.id, this.article.slug)
-      .pipe(takeUntilDestroyed(this.destroyRef))
+      .pipe(take(1))
       .subscribe(() => {
         this.comments = this.comments.filter(item => item !== comment);
       });

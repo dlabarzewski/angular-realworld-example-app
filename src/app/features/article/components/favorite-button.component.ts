@@ -1,11 +1,10 @@
-import { Component, DestroyRef, EventEmitter, inject, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { Router } from '@angular/router';
-import { EMPTY, switchMap } from 'rxjs';
+import { EMPTY, switchMap, take } from 'rxjs';
 import { NgClass } from '@angular/common';
 import { ArticlesService } from '../services/articles.service';
 import { UserService } from '../../../core/auth/services/user.service';
 import { Article } from '../models/article.model';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-favorite-button',
@@ -25,7 +24,6 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
   imports: [NgClass],
 })
 export class FavoriteButtonComponent {
-  destroyRef = inject(DestroyRef);
   isSubmitting = false;
 
   @Input() article!: Article;
@@ -54,7 +52,7 @@ export class FavoriteButtonComponent {
             return this.articleService.unfavorite(this.article.slug);
           }
         }),
-        takeUntilDestroyed(this.destroyRef),
+        take(1),
       )
       .subscribe({
         next: () => {

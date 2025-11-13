@@ -1,12 +1,11 @@
-import { Component, DestroyRef, EventEmitter, inject, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { Router } from '@angular/router';
-import { switchMap } from 'rxjs/operators';
+import { switchMap, take } from 'rxjs/operators';
 import { EMPTY } from 'rxjs';
 import { ProfileService } from '../services/profile.service';
 import { UserService } from '../../../core/auth/services/user.service';
 import { Profile } from '../models/profile.model';
 import { NgClass } from '@angular/common';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-follow-button',
@@ -31,7 +30,6 @@ export class FollowButtonComponent {
   @Input() profile!: Profile;
   @Output() toggle = new EventEmitter<Profile>();
   isSubmitting = false;
-  destroyRef = inject(DestroyRef);
 
   constructor(
     private readonly profileService: ProfileService,
@@ -56,7 +54,7 @@ export class FollowButtonComponent {
             return this.profileService.unfollow(this.profile.username);
           }
         }),
-        takeUntilDestroyed(this.destroyRef),
+        take(1),
       )
       .subscribe({
         next: profile => {

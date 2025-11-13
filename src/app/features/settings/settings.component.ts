@@ -1,11 +1,11 @@
-import { Component, DestroyRef, inject, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { User } from '../../core/auth/user.model';
 import { UserService } from '../../core/auth/services/user.service';
 import { ListErrorsComponent } from '../../shared/components/list-errors.component';
 import { Errors } from '../../core/models/errors.model';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { take } from 'rxjs';
 
 interface SettingsForm {
   image: FormControl<string>;
@@ -34,7 +34,6 @@ export default class SettingsComponent implements OnInit {
   });
   errors: Errors | null = null;
   isSubmitting = false;
-  destroyRef = inject(DestroyRef);
 
   constructor(
     private readonly router: Router,
@@ -54,7 +53,7 @@ export default class SettingsComponent implements OnInit {
 
     this.userService
       .update(this.settingsForm.value)
-      .pipe(takeUntilDestroyed(this.destroyRef))
+      .pipe(take(1))
       .subscribe({
         next: ({ user }) => void this.router.navigate(['/profile/', user.username]),
         error: err => {

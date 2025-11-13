@@ -1,10 +1,10 @@
-import { Component, DestroyRef, inject, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Validators, FormGroup, FormControl, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { ListErrorsComponent } from '../../shared/components/list-errors.component';
 import { Errors } from '../models/errors.model';
 import { UserService } from './services/user.service';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { take } from 'rxjs';
 
 interface AuthForm {
   email: FormControl<string>;
@@ -23,7 +23,6 @@ export default class AuthComponent implements OnInit {
   errors: Errors = { errors: {} };
   isSubmitting = false;
   authForm: FormGroup<AuthForm>;
-  destroyRef = inject(DestroyRef);
 
   constructor(
     private readonly route: ActivatedRoute,
@@ -71,7 +70,7 @@ export default class AuthComponent implements OnInit {
             },
           );
 
-    observable.pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+    observable.pipe(take(1)).subscribe({
       next: () => void this.router.navigate(['/']),
       error: err => {
         this.errors = err;

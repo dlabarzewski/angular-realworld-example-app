@@ -1,7 +1,7 @@
 import { Component, DestroyRef, inject, OnInit } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, UntypedFormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { combineLatest } from 'rxjs';
+import { combineLatest, take } from 'rxjs';
 import { Errors } from '../../../../core/models/errors.model';
 import { ArticlesService } from '../../services/articles.service';
 import { UserService } from '../../../../core/auth/services/user.service';
@@ -84,7 +84,7 @@ export default class EditorComponent implements OnInit {
       ? this.articleService.update({ ...articleData, slug })
       : this.articleService.create(articleData);
 
-    observable.pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+    observable.pipe(take(1)).subscribe({
       next: article => this.router.navigate(['/article/', article.slug]),
       error: err => {
         this.errors = err;

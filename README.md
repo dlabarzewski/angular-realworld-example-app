@@ -19,10 +19,11 @@ We're currently working on some docs for the codebase (explaining where function
 
 This repo is forked from [gothinkster/angular-realworld-example-app](https://github.com/gothinkster/angular-realworld-example-app)
 
-1. Data fetched in reactive way
+1. Data fetched in reactive way - no snapshot, ngOnInit or subscribe() is used
 2. Change detection strategy OnPush is used
 3. Created tags sidebar component
-4. All models are readonly
+4. All models are readonly - no mutability
+5. Submitting subscriptions uses take(1) instead of takeUntilDestroyed()
 
 # Getting started
 
