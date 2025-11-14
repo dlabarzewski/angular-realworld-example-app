@@ -35,6 +35,8 @@ This repo is forked from [gothinkster/angular-realworld-example-app](https://git
 4. remove NgClass
 5. remove refresh subject
 6. remove zone.js
+7. dont use window directly
+8. remove inline types
 
 # Getting started
 

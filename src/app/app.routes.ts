@@ -2,6 +2,7 @@ import { Routes } from '@angular/router';
 import { inject } from '@angular/core';
 import { UserService } from './core/auth/services/user.service';
 import { map } from 'rxjs/operators';
+import { AuthType } from './core/auth/statics/auth-type.enum';
 
 export const routes: Routes = [
   {
@@ -12,11 +13,13 @@ export const routes: Routes = [
     path: 'login',
     loadComponent: () => import('./core/auth/auth.component'),
     canActivate: [() => inject(UserService).isAuthenticated.pipe(map(isAuth => !isAuth))],
+    data: { authType: AuthType.LOGIN },
   },
   {
     path: 'register',
     loadComponent: () => import('./core/auth/auth.component'),
     canActivate: [() => inject(UserService).isAuthenticated.pipe(map(isAuth => !isAuth))],
+    data: { authType: AuthType.REGISTER },
   },
   {
     path: 'settings',
