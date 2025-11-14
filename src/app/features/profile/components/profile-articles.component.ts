@@ -5,6 +5,7 @@ import { ProfileService } from '../services/profile.service';
 import { Profile } from '../models/profile.model';
 import { ArticleListConfig } from '../../article/models/article-list-config.model';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { ListConfigType } from '../../article/statics/list-config-type.enum';
 
 @Component({
   selector: 'app-profile-articles',
@@ -29,7 +30,7 @@ export default class ProfileArticlesComponent implements OnInit {
         next: (profile: Profile) => {
           this.profile = profile;
           this.articlesConfig = {
-            type: 'all',
+            type: ListConfigType.ALL,
             filters: {
               author: this.profile.username,
             },

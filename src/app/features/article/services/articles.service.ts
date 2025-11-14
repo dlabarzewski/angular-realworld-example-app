@@ -4,6 +4,7 @@ import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { ArticleListConfig } from '../models/article-list-config.model';
 import { Article } from '../models/article.model';
+import { ListConfigType } from '../statics/list-config-type.enum';
 
 @Injectable({ providedIn: 'root' })
 export class ArticlesService {
@@ -19,7 +20,7 @@ export class ArticlesService {
     });
 
     return this.http.get<{ articles: Article[]; articlesCount: number }>(
-      '/articles' + (config.type === 'feed' ? '/feed' : ''),
+      '/articles' + (config.type === ListConfigType.FEED ? '/feed' : ''),
       { params },
     );
   }

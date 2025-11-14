@@ -6,6 +6,7 @@ import { ArticlePreviewComponent } from './article-preview.component';
 import { AsyncPipe, NgClass } from '@angular/common';
 import { LoadingState } from '../../../core/models/loading-state.model';
 import { BehaviorSubject, map, Observable, switchMap, tap } from 'rxjs';
+import { ListConfigType } from '../statics/list-config-type.enum';
 
 @Component({
   selector: 'app-article-list',
@@ -53,7 +54,7 @@ export class ArticleListComponent {
   protected readonly loading$ = this.loadingSubject.asObservable();
 
   private readonly querySubject = new BehaviorSubject<ArticleListConfig>({
-    type: 'all',
+    type: ListConfigType.ALL,
     filters: {},
     currentPage: 1,
   });

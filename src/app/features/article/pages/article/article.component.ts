@@ -1,7 +1,6 @@
-import { Component, DestroyRef, inject, OnInit } from '@angular/core';
+import { Component, DestroyRef, inject } from '@angular/core';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { User } from '../../../../core/auth/user.model';
 import { Article } from '../../models/article.model';
 import { ArticlesService } from '../../services/articles.service';
 import { CommentsService } from '../../services/comments.service';
@@ -11,8 +10,8 @@ import { AsyncPipe, NgClass } from '@angular/common';
 import { MarkdownPipe } from '../../../../shared/pipes/markdown.pipe';
 import { ListErrorsComponent } from '../../../../shared/components/list-errors.component';
 import { ArticleCommentComponent } from '../../components/article-comment.component';
-import { catchError, take } from 'rxjs/operators';
-import { combineLatest, throwError } from 'rxjs';
+import { catchError, map, switchMap, take } from 'rxjs/operators';
+import { BehaviorSubject, combineLatest, Observable, throwError } from 'rxjs';
 import { Comment } from '../../models/comment.model';
 import { IfAuthenticatedDirective } from '../../../../core/auth/if-authenticated.directive';
 import { Errors } from '../../../../core/models/errors.model';
@@ -20,6 +19,7 @@ import { Profile } from '../../../profile/models/profile.model';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FavoriteButtonComponent } from '../../components/favorite-button.component';
 import { FollowButtonComponent } from '../../../profile/components/follow-button.component';
+import { User } from 'src/app/core/auth/user.model';
 
 @Component({
   selector: 'app-article-page',
@@ -39,96 +39,111 @@ import { FollowButtonComponent } from '../../../profile/components/follow-button
     IfAuthenticatedDirective,
   ],
 })
-export default class ArticleComponent implements OnInit {
-  article!: Article;
-  currentUser!: User | null;
-  comments: Comment[] = [];
-  canModify: boolean = false;
+export default class ArticleComponent {
+  private readonly route = inject(ActivatedRoute);
+  private readonly articleService = inject(ArticlesService);
+  private readonly commentsService = inject(CommentsService);
+  private readonly router = inject(Router);
+  private readonly userService = inject(UserService);
+  private readonly destroyRef = inject(DestroyRef);
 
-  commentControl = new FormControl<string>('', { nonNullable: true });
-  commentFormErrors: Errors | null = null;
+  private readonly refreshSubject = new BehaviorSubject<void>(undefined);
+  protected readonly article$: Observable<Article> = combineLatest([this.route.params, this.refreshSubject]).pipe(
+    switchMap(([params]) => this.articleService.get(params['slug'])),
+    catchError(err => {
+      void this.router.navigate(['/']);
+      return throwError(() => err);
+    }),
+    takeUntilDestroyed(this.destroyRef),
+  );
 
-  isSubmitting = false;
-  isDeleting = false;
-  destroyRef = inject(DestroyRef);
+  protected readonly currentUser$: Observable<User | null> = this.userService.currentUser;
 
-  constructor(
-    private readonly route: ActivatedRoute,
-    private readonly articleService: ArticlesService,
-    private readonly commentsService: CommentsService,
-    private readonly router: Router,
-    private readonly userService: UserService,
-  ) {}
+  protected readonly canModify$: Observable<boolean> = combineLatest([this.article$, this.currentUser$]).pipe(
+    map(([article, currentUser]) => {
+      return currentUser?.username === article.author.username;
+    }),
+  );
 
-  ngOnInit(): void {
-    const slug = this.route.snapshot.params['slug'];
-    combineLatest([this.articleService.get(slug), this.commentsService.getAll(slug), this.userService.currentUser])
-      .pipe(
-        catchError(err => {
-          void this.router.navigate(['/']);
-          return throwError(() => err);
-        }),
-        takeUntilDestroyed(this.destroyRef),
-      )
-      .subscribe(([article, comments, currentUser]) => {
-        this.article = article;
-        this.comments = comments;
-        this.currentUser = currentUser;
-        this.canModify = currentUser?.username === article.author.username;
-      });
-  }
+  private readonly commentsRefreshSubject = new BehaviorSubject<void>(undefined);
+  protected readonly comments$: Observable<Comment[]> = combineLatest([
+    this.route.params,
+    this.commentsRefreshSubject,
+  ]).pipe(
+    switchMap(([params]) => this.commentsService.getAll(params['slug'])),
+    takeUntilDestroyed(this.destroyRef),
+  );
+
+  protected readonly commentControl = new FormControl<string>('', { nonNullable: true });
+
+  private readonly commentFormErrorsSubject = new BehaviorSubject<Errors | null>(null);
+  protected readonly commentFormErrors$ = this.commentFormErrorsSubject.asObservable();
+
+  private readonly isSubmittingSubject = new BehaviorSubject<boolean>(false);
+  protected readonly isSubmitting$ = this.isSubmittingSubject.asObservable();
+
+  private readonly isDeletingSubject = new BehaviorSubject<boolean>(false);
+  protected readonly isDeleting$ = this.isDeletingSubject.asObservable();
 
   onToggleFavorite(favorited: boolean): void {
-    this.article.favorited = favorited;
+    this.refreshSubject.next();
+    // this.article.favorited = favorited;
 
-    if (favorited) {
-      this.article.favoritesCount++;
-    } else {
-      this.article.favoritesCount--;
-    }
+    // if (favorited) {
+    //   this.article.favoritesCount++;
+    // } else {
+    //   this.article.favoritesCount--;
+    // }
   }
 
   toggleFollowing(profile: Profile): void {
-    this.article.author.following = profile.following;
+    this.refreshSubject.next();
+    // this.article.author.following = profile.following;
   }
 
   deleteArticle(): void {
-    this.isDeleting = true;
+    this.isDeletingSubject.next(true);
 
-    this.articleService
-      .delete(this.article.slug)
-      .pipe(take(1))
+    this.article$
+      .pipe(
+        switchMap(article => this.articleService.delete(article.slug)),
+        take(1),
+      )
       .subscribe(() => {
         void this.router.navigate(['/']);
       });
   }
 
   addComment() {
-    this.isSubmitting = true;
-    this.commentFormErrors = null;
+    this.isSubmittingSubject.next(true);
+    this.commentFormErrorsSubject.next(null);
 
-    this.commentsService
-      .add(this.article.slug, this.commentControl.value)
-      .pipe(take(1))
+    this.article$
+      .pipe(
+        switchMap(article => this.commentsService.add(article.slug, this.commentControl.value)),
+        take(1),
+      )
       .subscribe({
         next: comment => {
-          this.comments.unshift(comment);
+          this.commentsRefreshSubject.next();
           this.commentControl.reset('');
-          this.isSubmitting = false;
+          this.isSubmittingSubject.next(false);
         },
         error: errors => {
-          this.isSubmitting = false;
-          this.commentFormErrors = errors;
+          this.isSubmittingSubject.next(false);
+          this.commentFormErrorsSubject.next(errors);
         },
       });
   }
 
   deleteComment(comment: Comment): void {
-    this.commentsService
-      .delete(comment.id, this.article.slug)
-      .pipe(take(1))
+    this.article$
+      .pipe(
+        switchMap(article => this.commentsService.delete(comment.id, article.slug)),
+        take(1),
+      )
       .subscribe(() => {
-        this.comments = this.comments.filter(item => item !== comment);
+        this.commentsRefreshSubject.next();
       });
   }
 }

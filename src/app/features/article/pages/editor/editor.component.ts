@@ -1,5 +1,5 @@
 import { Component, DestroyRef, inject, OnInit } from '@angular/core';
-import { FormControl, FormGroup, ReactiveFormsModule, UntypedFormGroup } from '@angular/forms';
+import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { combineLatest, take } from 'rxjs';
 import { Errors } from '../../../../core/models/errors.model';
@@ -21,7 +21,7 @@ interface ArticleForm {
 })
 export default class EditorComponent implements OnInit {
   tagList: string[] = [];
-  articleForm: UntypedFormGroup = new FormGroup<ArticleForm>({
+  articleForm = new FormGroup<ArticleForm>({
     title: new FormControl('', { nonNullable: true }),
     description: new FormControl('', { nonNullable: true }),
     body: new FormControl('', { nonNullable: true }),

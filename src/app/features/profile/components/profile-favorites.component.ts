@@ -5,6 +5,7 @@ import { ProfileService } from '../services/profile.service';
 import { Profile } from '../models/profile.model';
 import { ArticleListConfig } from '../../article/models/article-list-config.model';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { ListConfigType } from '../../article/statics/list-config-type.enum';
 
 @Component({
   selector: 'app-profile-favorites',
@@ -29,7 +30,7 @@ export default class ProfileFavoritesComponent implements OnInit {
         next: (profile: Profile) => {
           this.profile = profile;
           this.favoritesConfig = {
-            type: 'all',
+            type: ListConfigType.ALL,
             filters: {
               favorited: this.profile.username,
             },
