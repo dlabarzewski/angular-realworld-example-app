@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject, output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, inject, Output, output } from '@angular/core';
 import { AsyncPipe } from '@angular/common';
 import { TagsService } from '../tags.service';
 import { tap } from 'rxjs/internal/operators/tap';
@@ -14,7 +14,7 @@ import { BehaviorSubject } from 'rxjs';
         @if (tags.length > 0) {
           <div class="tag-list">
             @for (tag of tags; track tag) {
-              <a class="tag-default tag-pill" (click)="tagClick.emit(tag)">
+              <a class="tag-default tag-pill" (click)="tagSelected.emit(tag)">
                 {{ tag }}
               </a>
             }
@@ -37,5 +37,5 @@ export class TagsSidebarComponent {
 
   protected readonly tags$ = this.tagService.getAll().pipe(tap(() => this.tagsLoadedSubject.next(true)));
 
-  public readonly tagClick = output<string>();
+  @Output() tagSelected = new EventEmitter<string>();
 }

@@ -33,6 +33,8 @@ This repo is forked from [gothinkster/angular-realworld-example-app](https://git
 2. Article page duplicated app-article-meta
 3. Replace observables with signals
 4. remove NgClass
+5. remove refresh subject
+6. remove zone.js
 
 # Getting started
 

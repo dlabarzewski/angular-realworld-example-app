@@ -42,7 +42,7 @@
         </div>
 
         <div class="col-md-3">
-          <app-tags-sidebar (tagClick)="setListTo(ListConfigType.ALL, { tag: $event })" />
+          <app-tags-sidebar (tagSelected)="setListTo(ListConfigType.ALL, { tag: $event })" />
         </div>
       </div>
     </div>

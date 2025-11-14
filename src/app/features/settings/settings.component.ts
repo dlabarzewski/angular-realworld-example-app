@@ -1,11 +1,13 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, DestroyRef, inject, OnInit } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { User } from '../../core/auth/user.model';
 import { UserService } from '../../core/auth/services/user.service';
 import { ListErrorsComponent } from '../../shared/components/list-errors.component';
 import { Errors } from '../../core/models/errors.model';
-import { take } from 'rxjs';
+import { BehaviorSubject, take, tap } from 'rxjs';
+import { AsyncPipe } from '@angular/common';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 interface SettingsForm {
   image: FormControl<string>;
@@ -18,11 +20,14 @@ interface SettingsForm {
 @Component({
   selector: 'app-settings-page',
   templateUrl: './settings.component.html',
-  imports: [ListErrorsComponent, ReactiveFormsModule],
+  imports: [ListErrorsComponent, ReactiveFormsModule, AsyncPipe],
 })
 export default class SettingsComponent implements OnInit {
-  user!: User;
-  settingsForm = new FormGroup<SettingsForm>({
+  private readonly router = inject(Router);
+  private readonly userService = inject(UserService);
+  private readonly destroyRef = inject(DestroyRef);
+
+  protected readonly settingsForm = new FormGroup<SettingsForm>({
     image: new FormControl('', { nonNullable: true }),
     username: new FormControl('', { nonNullable: true }),
     bio: new FormControl('', { nonNullable: true }),
@@ -32,17 +37,21 @@ export default class SettingsComponent implements OnInit {
       nonNullable: true,
     }),
   });
-  errors: Errors | null = null;
-  isSubmitting = false;
 
-  constructor(
-    private readonly router: Router,
-    private readonly userService: UserService,
-  ) {}
+  private readonly errorsSubject = new BehaviorSubject<Errors | null>(null);
+  protected readonly errors$ = this.errorsSubject.asObservable();
+
+  private readonly isSubmittingSubject = new BehaviorSubject<boolean>(false);
+  protected readonly isSubmitting$ = this.isSubmittingSubject.asObservable();
 
   ngOnInit(): void {
-    // TODO: fix
-    this.settingsForm.patchValue(this.userService.getCurrentUser() as Partial<User>);
+    this.userService
+      .getCurrentUser()
+      .pipe(
+        tap(({ user }) => this.settingsForm.patchValue(user)),
+        takeUntilDestroyed(this.destroyRef),
+      )
+      .subscribe();
   }
 
   logout(): void {
@@ -50,7 +59,7 @@ export default class SettingsComponent implements OnInit {
   }
 
   submitForm() {
-    this.isSubmitting = true;
+    this.isSubmittingSubject.next(true);
 
     this.userService
       .update(this.settingsForm.value)
@@ -58,8 +67,8 @@ export default class SettingsComponent implements OnInit {
       .subscribe({
         next: ({ user }) => void this.router.navigate(['/profile/', user.username]),
         error: err => {
-          this.errors = err;
-          this.isSubmitting = false;
+          this.errorsSubject.next(err);
+          this.isSubmittingSubject.next(false);
         },
       });
   }
