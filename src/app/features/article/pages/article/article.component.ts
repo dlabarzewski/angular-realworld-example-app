@@ -1,4 +1,4 @@
-import { Component, DestroyRef, inject } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { Article } from '../../models/article.model';
@@ -16,7 +16,6 @@ import { Comment } from '../../models/comment.model';
 import { IfAuthenticatedDirective } from '../../../../core/auth/if-authenticated.directive';
 import { Errors } from '../../../../core/models/errors.model';
 import { Profile } from '../../../profile/models/profile.model';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FavoriteButtonComponent } from '../../components/favorite-button.component';
 import { FollowButtonComponent } from '../../../profile/components/follow-button.component';
 import { User } from 'src/app/core/auth/user.model';
@@ -45,7 +44,6 @@ export default class ArticleComponent {
   private readonly commentsService = inject(CommentsService);
   private readonly router = inject(Router);
   private readonly userService = inject(UserService);
-  private readonly destroyRef = inject(DestroyRef);
 
   private readonly refreshSubject = new BehaviorSubject<void>(undefined);
   protected readonly article$: Observable<Article> = combineLatest([this.route.params, this.refreshSubject]).pipe(
@@ -54,7 +52,6 @@ export default class ArticleComponent {
       void this.router.navigate(['/']);
       return throwError(() => err);
     }),
-    takeUntilDestroyed(this.destroyRef),
   );
 
   protected readonly currentUser$: Observable<User | null> = this.userService.currentUser;
@@ -69,10 +66,7 @@ export default class ArticleComponent {
   protected readonly comments$: Observable<Comment[]> = combineLatest([
     this.route.params,
     this.commentsRefreshSubject,
-  ]).pipe(
-    switchMap(([params]) => this.commentsService.getAll(params['slug'])),
-    takeUntilDestroyed(this.destroyRef),
-  );
+  ]).pipe(switchMap(([params]) => this.commentsService.getAll(params['slug'])));
 
   protected readonly commentControl = new FormControl<string>('', { nonNullable: true });
 
