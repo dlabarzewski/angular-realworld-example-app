@@ -1,12 +1,13 @@
-import { Component, DestroyRef, inject, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, inject, OnInit } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { combineLatest, take } from 'rxjs';
+import { BehaviorSubject, combineLatest, EMPTY, switchMap, take } from 'rxjs';
 import { Errors } from '../../../../core/models/errors.model';
 import { ArticlesService } from '../../services/articles.service';
 import { UserService } from '../../../../core/auth/services/user.service';
 import { ListErrorsComponent } from '../../../../shared/components/list-errors.component';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { AsyncPipe } from '@angular/common';
 
 interface ArticleForm {
   title: FormControl<string>;
@@ -17,67 +18,80 @@ interface ArticleForm {
 @Component({
   selector: 'app-editor-page',
   templateUrl: './editor.component.html',
-  imports: [ListErrorsComponent, ReactiveFormsModule],
+  imports: [ListErrorsComponent, ReactiveFormsModule, AsyncPipe],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class EditorComponent implements OnInit {
-  tagList: string[] = [];
-  articleForm = new FormGroup<ArticleForm>({
+  private readonly destroyRef = inject(DestroyRef);
+  private readonly articleService = inject(ArticlesService);
+  private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
+  private readonly userService = inject(UserService);
+
+  private readonly tagListSubject = new BehaviorSubject<string[]>([]);
+  protected readonly tagList$ = this.tagListSubject.asObservable();
+
+  protected readonly articleForm = new FormGroup<ArticleForm>({
     title: new FormControl('', { nonNullable: true }),
     description: new FormControl('', { nonNullable: true }),
     body: new FormControl('', { nonNullable: true }),
   });
-  tagField = new FormControl<string>('', { nonNullable: true });
+  protected readonly tagField = new FormControl<string>('', { nonNullable: true });
 
-  errors: Errors | null = null;
-  isSubmitting = false;
-  destroyRef = inject(DestroyRef);
+  private readonly errorsSubject = new BehaviorSubject<Errors | null>(null);
+  protected readonly errors$ = this.errorsSubject.asObservable();
 
-  constructor(
-    private readonly articleService: ArticlesService,
-    private readonly route: ActivatedRoute,
-    private readonly router: Router,
-    private readonly userService: UserService,
-  ) {}
+  private readonly isSubmittingSubject = new BehaviorSubject<boolean>(false);
+  protected readonly isSubmitting$ = this.isSubmittingSubject.asObservable();
 
   ngOnInit() {
-    if (this.route.snapshot.params['slug']) {
-      combineLatest([this.articleService.get(this.route.snapshot.params['slug']), this.userService.getCurrentUser()])
-        .pipe(takeUntilDestroyed(this.destroyRef))
-        .subscribe(([article, { user }]) => {
-          if (user.username === article.author.username) {
-            this.tagList = article.tagList;
-            this.articleForm.patchValue(article);
-          } else {
-            void this.router.navigate(['/']);
+    this.route.params
+      .pipe(
+        switchMap(params => {
+          if (params['slug']) {
+            return combineLatest([this.articleService.get(params['slug']), this.userService.getCurrentUser()]);
           }
-        });
-    }
+          return EMPTY;
+        }),
+        takeUntilDestroyed(this.destroyRef),
+      )
+      .subscribe(([article, { user }]) => {
+        if (user.username === article.author.username) {
+          this.tagListSubject.next(article.tagList);
+          this.articleForm.patchValue(article);
+        } else {
+          void this.router.navigate(['/']);
+        }
+      });
   }
 
   addTag() {
     // retrieve tag control
     const tag = this.tagField.value;
+
+    const tagList = this.tagListSubject.value;
     // only add tag if it does not exist yet
-    if (tag != null && tag.trim() !== '' && this.tagList.indexOf(tag) < 0) {
-      this.tagList.push(tag);
+    if (tag != null && tag.trim() !== '' && tagList.indexOf(tag) < 0) {
+      this.tagListSubject.next([...tagList, tag]);
     }
     // clear the input
     this.tagField.reset('');
   }
 
   removeTag(tagName: string): void {
-    this.tagList = this.tagList.filter(tag => tag !== tagName);
+    const tagList = this.tagListSubject.value;
+    this.tagListSubject.next(tagList.filter(tag => tag !== tagName));
   }
 
   submitForm(): void {
-    this.isSubmitting = true;
+    this.isSubmittingSubject.next(true);
     // update any single tag
     this.addTag();
 
     const slug = this.route.snapshot.params['slug'];
     const articleData = {
       ...this.articleForm.value,
-      tagList: this.tagList,
+      tagList: this.tagListSubject.value,
     };
 
     const observable = slug
@@ -87,8 +101,8 @@ export default class EditorComponent implements OnInit {
     observable.pipe(take(1)).subscribe({
       next: article => this.router.navigate(['/article/', article.slug]),
       error: err => {
-        this.errors = err;
-        this.isSubmitting = false;
+        this.errorsSubject.next(err);
+        this.isSubmittingSubject.next(false);
       },
     });
   }

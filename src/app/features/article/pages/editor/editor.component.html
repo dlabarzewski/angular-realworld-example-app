@@ -2,10 +2,10 @@
   <div class="container page">
     <div class="row">
       <div class="col-md-10 offset-md-1 col-xs-12">
-        <app-list-errors [errors]="errors" />
+        <app-list-errors [errors]="errors$ | async" />
 
         <form [formGroup]="articleForm">
-          <fieldset [disabled]="isSubmitting">
+          <fieldset [disabled]="isSubmitting$ | async">
             <fieldset class="form-group">
               <input
                 class="form-control form-control-lg"
@@ -43,7 +43,7 @@
                 (keyup.enter)="addTag()"
               />
               <div class="tag-list">
-                @for (tag of tagList; track tag) {
+                @for (tag of tagList$ | async; track tag) {
                   <span class="tag-default tag-pill">
                     <i class="ion-close-round" (click)="removeTag(tag)"></i>
                     {{ tag }}
