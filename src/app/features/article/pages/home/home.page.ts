@@ -13,7 +13,11 @@ import { TagsSidebarComponent } from 'src/app/features/tags/components/tags-side
 @Component({
   selector: 'app-home-page',
   templateUrl: './home.page.html',
-  styleUrls: ['./home.page.css'],
+  styles: `
+    .nav-link {
+      cursor: pointer;
+    }
+  `,
   imports: [ArticleListComponent, IfAuthenticatedDirective, TagsSidebarComponent, AsyncPipe],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

@@ -27,6 +27,11 @@ import { BehaviorSubject } from 'rxjs';
       }
     </div>
   `,
+  styles: `
+    .tag-pill {
+      cursor: pointer;
+    }
+  `,
   imports: [AsyncPipe],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
