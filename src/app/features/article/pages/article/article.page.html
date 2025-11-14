@@ -4,32 +4,7 @@
     <div class="container">
       <h1>{{ article.title }}</h1>
 
-      <app-article-meta [article]="article">
-        @if (canModify$ | async) {
-        <span>
-          <a class="btn btn-sm btn-outline-secondary" [routerLink]="['/editor', article.slug]">
-            <i class="ion-edit"></i> Edit Article
-          </a>
-
-          <button
-            class="btn btn-sm btn-outline-danger"
-            [class.disabled]="isDeleting$ | async"
-            (click)="deleteArticle()"
-          >
-            <i class="ion-trash-a"></i> Delete Article
-          </button>
-        </span>
-        } @else {
-        <span>
-          <app-follow-button [profile]="article.author" (toggle)="toggleFollowing($event)" />
-
-          <app-favorite-button [article]="article" (toggle)="onToggleFavorite($event)">
-            {{ article.favorited ? 'Unfavorite' : 'Favorite' }} Article
-            <span class="counter">({{ article.favoritesCount }})</span>
-          </app-favorite-button>
-        </span>
-        }
-      </app-article-meta>
+      <ng-container *ngTemplateOutlet="articleMeta; context: { $implicit: article }"></ng-container>
     </div>
   </div>
 
@@ -49,37 +24,13 @@
     <hr />
 
     <div class="article-actions">
-      <app-article-meta [article]="article">
-        @if (canModify$ | async) {
-        <span>
-          <a class="btn btn-sm btn-outline-secondary" [routerLink]="['/editor', article.slug]">
-            <i class="ion-edit"></i> Edit Article
-          </a>
-
-          <button
-            class="btn btn-sm btn-outline-danger"
-            [class.disabled]="isDeleting$ | async"
-            (click)="deleteArticle()"
-          >
-            <i class="ion-trash-a"></i> Delete Article
-          </button>
-        </span>
-        } @else {
-        <span>
-          <app-follow-button [profile]="article.author" (toggle)="toggleFollowing($event)" />
-
-          <app-favorite-button [article]="article" (toggle)="onToggleFavorite($event)">
-            {{ article.favorited ? 'Unfavorite' : 'Favorite' }} Article
-            <span class="counter">({{ article.favoritesCount }})</span>
-          </app-favorite-button>
-        </span>
-        }
-      </app-article-meta>
+      <ng-container *ngTemplateOutlet="articleMeta; context: { $implicit: article }"></ng-container>
     </div>
 
     <div class="row">
       <div class="col-xs-12 col-md-8 offset-md-2">
-        <div *ifAuthenticated="true">
+        @if (currentUser$ | async) {
+        <div>
           <app-list-errors [errors]="commentFormErrors$ | async" />
           <form class="card comment-form" (ngSubmit)="addComment()">
             <fieldset [disabled]="isSubmitting$ | async">
@@ -102,13 +53,12 @@
             </fieldset>
           </form>
         </div>
-
-        <div *ifAuthenticated="false">
+        } @else {
+        <div>
           <a [routerLink]="['/login']">Sign in</a> or <a [routerLink]="['/register']">sign up</a> to add comments on
           this article.
         </div>
-
-        @for (comment of comments$ | async; track comment) {
+        } @for (comment of comments$ | async; track comment) {
         <app-article-comment [comment]="comment" (delete)="deleteComment(comment)" />
         }
       </div>
@@ -116,3 +66,20 @@
   </div>
 </div>
 }
+
+<ng-template #articleMeta let-article>
+  <app-article-meta [article]="article">
+    @if (canModify$ | async) {
+    <app-article-settings [article]="article" [deleteDisabled]="!!(isDeleting$ | async)" (delete)="deleteArticle()" />
+    } @else {
+    <span>
+      <app-follow-button [profile]="article.author" (toggle)="toggleFollowing($event)" />
+
+      <app-favorite-button [article]="article" (toggle)="onToggleFavorite($event)">
+        {{ article.favorited ? 'Unfavorite' : 'Favorite' }} Article
+        <span class="counter">({{ article.favoritesCount }})</span>
+      </app-favorite-button>
+    </span>
+    }
+  </app-article-meta>
+</ng-template>

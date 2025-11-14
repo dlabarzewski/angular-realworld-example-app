@@ -6,19 +6,19 @@ import { ArticlesService } from '../../services/articles.service';
 import { CommentsService } from '../../services/comments.service';
 import { UserService } from '../../../../core/auth/services/user.service';
 import { ArticleMetaComponent } from '../../components/article-meta.component';
-import { AsyncPipe } from '@angular/common';
+import { AsyncPipe, NgTemplateOutlet } from '@angular/common';
 import { MarkdownPipe } from '../../../../shared/pipes/markdown.pipe';
 import { ListErrorsComponent } from '../../../../shared/components/list-errors.component';
 import { ArticleCommentComponent } from '../../components/article-comment.component';
 import { catchError, map, switchMap, take } from 'rxjs/operators';
 import { BehaviorSubject, combineLatest, Observable, throwError } from 'rxjs';
 import { Comment } from '../../models/comment.model';
-import { IfAuthenticatedDirective } from '../../../../core/auth/if-authenticated.directive';
 import { Errors } from '../../../../core/models/errors.model';
 import { Profile } from '../../../profile/models/profile.model';
 import { FavoriteButtonComponent } from '../../components/favorite-button.component';
 import { FollowButtonComponent } from '../../../profile/components/follow-button.component';
 import { User } from 'src/app/core/auth/user.model';
+import { ArticleSettingsComponent } from '../../components/article-settings.component';
 
 @Component({
   selector: 'app-article-page',
@@ -34,7 +34,8 @@ import { User } from 'src/app/core/auth/user.model';
     FormsModule,
     ArticleCommentComponent,
     ReactiveFormsModule,
-    IfAuthenticatedDirective,
+    ArticleSettingsComponent,
+    NgTemplateOutlet,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

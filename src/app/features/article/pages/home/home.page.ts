@@ -5,7 +5,6 @@ import { AsyncPipe } from '@angular/common';
 import { ArticleListComponent } from '../../components/article-list.component';
 import { take, tap } from 'rxjs/operators';
 import { UserService } from '../../../../core/auth/services/user.service';
-import { IfAuthenticatedDirective } from '../../../../core/auth/if-authenticated.directive';
 import { BehaviorSubject } from 'rxjs';
 import { ListConfigType } from '../../statics/list-config-type.enum';
 import { TagsSidebarComponent } from 'src/app/features/tags/components/tags-sidebar.component';
@@ -18,7 +17,7 @@ import { TagsSidebarComponent } from 'src/app/features/tags/components/tags-side
       cursor: pointer;
     }
   `,
-  imports: [ArticleListComponent, IfAuthenticatedDirective, TagsSidebarComponent, AsyncPipe],
+  imports: [ArticleListComponent, TagsSidebarComponent, AsyncPipe],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class HomePage {
