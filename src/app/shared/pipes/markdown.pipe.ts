@@ -6,7 +6,7 @@ import { DomSanitizer } from '@angular/platform-browser';
   standalone: true,
 })
 export class MarkdownPipe implements PipeTransform {
-  domSanitizer = inject(DomSanitizer);
+  private readonly domSanitizer = inject(DomSanitizer);
   async transform(content: string): Promise<string> {
     const { marked } = await import('marked');
     return this.domSanitizer.sanitize(SecurityContext.HTML, marked.parse(content)) || '';

@@ -1,4 +1,4 @@
-@if (errorList) {
+@if (errorList$ | async; as errorList) {
   <ul class="error-messages">
     @for (error of errorList; track error) {
       <li>{{ error }}</li>
