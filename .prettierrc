@@ -5,5 +5,11 @@
   "semi": true,
   "trailingComma": "all",
   "bracketSpacing": true,
-  "arrowParens": "avoid"
+  "arrowParens": "avoid",
+    "overrides": [
+    {
+      "files": ["*.component.html", "*.page.html"],
+      "options": { "parser": "angular" }
+    }
+  ]
 }
