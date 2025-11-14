@@ -1,11 +1,11 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, inject, Input, Output } from '@angular/core';
 import { Router } from '@angular/router';
 import { switchMap, take } from 'rxjs/operators';
-import { EMPTY } from 'rxjs';
+import { BehaviorSubject, EMPTY } from 'rxjs';
 import { ProfileService } from '../services/profile.service';
 import { UserService } from '../../../core/auth/services/user.service';
 import { Profile } from '../models/profile.model';
-import { NgClass } from '@angular/common';
+import { AsyncPipe, NgClass } from '@angular/common';
 
 @Component({
   selector: 'app-follow-button',
@@ -13,7 +13,7 @@ import { NgClass } from '@angular/common';
     <button
       class="btn btn-sm action-btn"
       [ngClass]="{
-        disabled: isSubmitting,
+        disabled: isSubmitting$ | async,
         'btn-outline-secondary': !profile.following,
         'btn-secondary': profile.following,
       }"
@@ -24,21 +24,21 @@ import { NgClass } from '@angular/common';
       {{ profile.following ? 'Unfollow' : 'Follow' }} {{ profile.username }}
     </button>
   `,
-  imports: [NgClass],
+  imports: [NgClass, AsyncPipe],
 })
 export class FollowButtonComponent {
+  private readonly profileService = inject(ProfileService);
+  private readonly router = inject(Router);
+  private readonly userService = inject(UserService);
+
   @Input() profile!: Profile;
   @Output() toggle = new EventEmitter<Profile>();
-  isSubmitting = false;
 
-  constructor(
-    private readonly profileService: ProfileService,
-    private readonly router: Router,
-    private readonly userService: UserService,
-  ) {}
+  private readonly isSubmittingSubject = new BehaviorSubject<boolean>(false);
+  protected readonly isSubmitting$ = this.isSubmittingSubject.asObservable();
 
   toggleFollowing(): void {
-    this.isSubmitting = true;
+    this.isSubmittingSubject.next(true);
 
     this.userService.isAuthenticated
       .pipe(
@@ -58,10 +58,10 @@ export class FollowButtonComponent {
       )
       .subscribe({
         next: profile => {
-          this.isSubmitting = false;
+          this.isSubmittingSubject.next(false);
           this.toggle.emit(profile);
         },
-        error: () => (this.isSubmitting = false),
+        error: () => this.isSubmittingSubject.next(false),
       });
   }
 }

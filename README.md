@@ -24,13 +24,15 @@ This repo is forked from [gothinkster/angular-realworld-example-app](https://git
 3. Created tags sidebar component
 4. All models are readonly - no mutability
 5. Submitting subscriptions uses take(1) instead of takeUntilDestroyed()
-6. inject() used instrad of constructor
+6. inject() used instead of constructor
+7. removed profile-favorites component - it was duplicated profile-articles component with different filter
 
 ## TODO
 
 1. Split article page
 2. Article page duplicated app-article-meta
 3. Replace observables with signals
+4. remove NgClass
 
 # Getting started
 
