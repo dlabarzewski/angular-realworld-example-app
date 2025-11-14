@@ -1,4 +1,4 @@
-import { Component, DestroyRef, inject, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, inject, OnInit } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { User } from '../../core/auth/user.model';
@@ -21,6 +21,7 @@ interface SettingsForm {
   selector: 'app-settings-page',
   templateUrl: './settings.component.html',
   imports: [ListErrorsComponent, ReactiveFormsModule, AsyncPipe],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class SettingsComponent implements OnInit {
   private readonly router = inject(Router);

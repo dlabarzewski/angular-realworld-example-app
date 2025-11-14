@@ -1,4 +1,4 @@
-import { Component, EventEmitter, inject, Input, Output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, inject, Input, Output } from '@angular/core';
 import { Router } from '@angular/router';
 import { BehaviorSubject, EMPTY, switchMap, take } from 'rxjs';
 import { AsyncPipe, NgClass } from '@angular/common';
@@ -22,6 +22,7 @@ import { Article } from '../models/article.model';
     </button>
   `,
   imports: [NgClass, AsyncPipe],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class FavoriteButtonComponent {
   private readonly isSubmittingSubject = new BehaviorSubject<boolean>(false);

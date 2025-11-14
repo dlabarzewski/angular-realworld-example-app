@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { Validators, FormGroup, FormControl, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { ListErrorsComponent } from '../../shared/components/list-errors.component';
@@ -16,6 +16,7 @@ interface AuthForm {
   selector: 'app-auth-page',
   templateUrl: './auth.component.html',
   imports: [RouterLink, ListErrorsComponent, ReactiveFormsModule],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class AuthComponent implements OnInit {
   authType = '';

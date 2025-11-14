@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output, inject } from '@angular/core';
 import { UserService } from '../../../core/auth/services/user.service';
 import { User } from '../../../core/auth/user.model';
 import { RouterLink } from '@angular/router';
@@ -37,6 +37,7 @@ import { AsyncPipe, DatePipe } from '@angular/common';
     }
   `,
   imports: [RouterLink, DatePipe, AsyncPipe],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ArticleCommentComponent {
   @Input() comment!: Comment;

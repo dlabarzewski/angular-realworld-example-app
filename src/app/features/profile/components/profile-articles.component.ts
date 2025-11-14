@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { ArticleListComponent } from '../../article/components/article-list.component';
 import { ProfileService } from '../services/profile.service';
@@ -18,6 +18,7 @@ interface RouteData {
     <app-article-list [limit]="10" [config]="articlesConfig" />
   }`,
   imports: [ArticleListComponent, AsyncPipe],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class ProfileArticlesComponent {
   private readonly route = inject(ActivatedRoute);

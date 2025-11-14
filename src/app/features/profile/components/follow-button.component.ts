@@ -1,4 +1,4 @@
-import { Component, EventEmitter, inject, Input, Output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, inject, Input, Output } from '@angular/core';
 import { Router } from '@angular/router';
 import { switchMap, take } from 'rxjs/operators';
 import { BehaviorSubject, EMPTY } from 'rxjs';
@@ -25,6 +25,7 @@ import { AsyncPipe, NgClass } from '@angular/common';
     </button>
   `,
   imports: [NgClass, AsyncPipe],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class FollowButtonComponent {
   private readonly profileService = inject(ProfileService);

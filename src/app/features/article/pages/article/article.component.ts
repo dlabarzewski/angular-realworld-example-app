@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { Article } from '../../models/article.model';
@@ -37,6 +37,7 @@ import { User } from 'src/app/core/auth/user.model';
     ReactiveFormsModule,
     IfAuthenticatedDirective,
   ],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class ArticleComponent {
   private readonly route = inject(ActivatedRoute);

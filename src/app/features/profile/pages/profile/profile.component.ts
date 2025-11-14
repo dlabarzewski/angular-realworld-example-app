@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { catchError, map, switchMap } from 'rxjs/operators';
 import { BehaviorSubject, combineLatest, Observable, throwError } from 'rxjs';
@@ -12,6 +12,7 @@ import { AsyncPipe } from '@angular/common';
   selector: 'app-profile-page',
   templateUrl: './profile.component.html',
   imports: [FollowButtonComponent, RouterLink, RouterLinkActive, RouterOutlet, FollowButtonComponent, AsyncPipe],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProfileComponent {
   private readonly route = inject(ActivatedRoute);
