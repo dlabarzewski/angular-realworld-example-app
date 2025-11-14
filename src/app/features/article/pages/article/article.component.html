@@ -13,7 +13,7 @@
 
               <button
                 class="btn btn-sm btn-outline-danger"
-                [ngClass]="{ disabled: isDeleting$ | async }"
+                [class.disabled]="isDeleting$ | async"
                 (click)="deleteArticle()"
               >
                 <i class="ion-trash-a"></i> Delete Article
@@ -60,7 +60,7 @@
 
               <button
                 class="btn btn-sm btn-outline-danger"
-                [ngClass]="{ disabled: isDeleting$ | async }"
+                [class.disabled]="isDeleting$ | async"
                 (click)="deleteArticle()"
               >
                 <i class="ion-trash-a"></i> Delete Article

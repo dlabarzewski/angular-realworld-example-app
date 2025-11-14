@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { ArticleListConfig } from '../../models/article-list-config.model';
-import { AsyncPipe, NgClass } from '@angular/common';
+import { AsyncPipe } from '@angular/common';
 import { ArticleListComponent } from '../../components/article-list.component';
 import { take, tap } from 'rxjs/operators';
 import { UserService } from '../../../../core/auth/services/user.service';
@@ -14,7 +14,7 @@ import { ListConfigType } from '../../statics/list-config-type.enum';
   selector: 'app-home-page',
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.css'],
-  imports: [NgClass, ArticleListComponent, IfAuthenticatedDirective, TagsSidebarComponent, AsyncPipe],
+  imports: [ArticleListComponent, IfAuthenticatedDirective, TagsSidebarComponent, AsyncPipe],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class HomeComponent {

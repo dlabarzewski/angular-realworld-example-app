@@ -5,18 +5,16 @@ import { BehaviorSubject, EMPTY } from 'rxjs';
 import { ProfileService } from '../services/profile.service';
 import { UserService } from '../../../core/auth/services/user.service';
 import { Profile } from '../models/profile.model';
-import { AsyncPipe, NgClass } from '@angular/common';
+import { AsyncPipe } from '@angular/common';
 
 @Component({
   selector: 'app-follow-button',
   template: `
     <button
       class="btn btn-sm action-btn"
-      [ngClass]="{
-        disabled: isSubmitting$ | async,
-        'btn-outline-secondary': !profile.following,
-        'btn-secondary': profile.following,
-      }"
+      [class.disabled]="isSubmitting$ | async"
+      [class.btn-outline-secondary]="!profile.following"
+      [class.btn-secondary]="profile.following"
       (click)="toggleFollowing()"
     >
       <i class="ion-plus-round"></i>
@@ -24,7 +22,7 @@ import { AsyncPipe, NgClass } from '@angular/common';
       {{ profile.following ? 'Unfollow' : 'Follow' }} {{ profile.username }}
     </button>
   `,
-  imports: [NgClass, AsyncPipe],
+  imports: [AsyncPipe],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class FollowButtonComponent {

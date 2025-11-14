@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, inject, Input, Output } from '@angular/core';
 import { Router } from '@angular/router';
 import { BehaviorSubject, EMPTY, switchMap, take } from 'rxjs';
-import { AsyncPipe, NgClass } from '@angular/common';
+import { AsyncPipe } from '@angular/common';
 import { ArticlesService } from '../services/articles.service';
 import { UserService } from '../../../core/auth/services/user.service';
 import { Article } from '../models/article.model';
@@ -11,17 +11,15 @@ import { Article } from '../models/article.model';
   template: `
     <button
       class="btn btn-sm"
-      [ngClass]="{
-        disabled: isSubmitting$ | async,
-        'btn-outline-primary': !article.favorited,
-        'btn-primary': article.favorited,
-      }"
+      [class.disabled]="isSubmitting$ | async"
+      [class.btn-outline-primary]="!article.favorited"
+      [class.btn-primary]="article.favorited"
       (click)="toggleFavorite()"
     >
       <i class="ion-heart"></i> <ng-content></ng-content>
     </button>
   `,
-  imports: [NgClass, AsyncPipe],
+  imports: [AsyncPipe],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class FavoriteButtonComponent {

@@ -6,7 +6,7 @@ import { ArticlesService } from '../../services/articles.service';
 import { CommentsService } from '../../services/comments.service';
 import { UserService } from '../../../../core/auth/services/user.service';
 import { ArticleMetaComponent } from '../../components/article-meta.component';
-import { AsyncPipe, NgClass } from '@angular/common';
+import { AsyncPipe } from '@angular/common';
 import { MarkdownPipe } from '../../../../shared/pipes/markdown.pipe';
 import { ListErrorsComponent } from '../../../../shared/components/list-errors.component';
 import { ArticleCommentComponent } from '../../components/article-comment.component';
@@ -26,7 +26,6 @@ import { User } from 'src/app/core/auth/user.model';
   imports: [
     ArticleMetaComponent,
     RouterLink,
-    NgClass,
     FollowButtonComponent,
     FavoriteButtonComponent,
     MarkdownPipe,
@@ -82,18 +81,10 @@ export default class ArticleComponent {
 
   onToggleFavorite(favorited: boolean): void {
     this.refreshSubject.next();
-    // this.article.favorited = favorited;
-
-    // if (favorited) {
-    //   this.article.favoritesCount++;
-    // } else {
-    //   this.article.favoritesCount--;
-    // }
   }
 
   toggleFollowing(profile: Profile): void {
     this.refreshSubject.next();
-    // this.article.author.following = profile.following;
   }
 
   deleteArticle(): void {

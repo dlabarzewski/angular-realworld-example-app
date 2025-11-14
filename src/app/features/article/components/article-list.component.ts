@@ -3,7 +3,7 @@ import { ArticlesService } from '../services/articles.service';
 import { ArticleListConfig } from '../models/article-list-config.model';
 import { Article } from '../models/article.model';
 import { ArticlePreviewComponent } from './article-preview.component';
-import { AsyncPipe, NgClass } from '@angular/common';
+import { AsyncPipe } from '@angular/common';
 import { LoadingState } from '../../../core/models/loading-state.model';
 import { BehaviorSubject, map, Observable, switchMap, tap } from 'rxjs';
 import { ListConfigType } from '../statics/list-config-type.enum';
@@ -25,7 +25,7 @@ import { ListConfigType } from '../statics/list-config-type.enum';
         <nav>
           <ul class="pagination">
             @for (pageNumber of totalPages$ | async; track pageNumber) {
-              <li class="page-item" [ngClass]="{ active: pageNumber === (currentPage$ | async) }">
+              <li class="page-item" [class.active]="pageNumber === (currentPage$ | async)">
                 <button class="page-link" (click)="setPageTo(pageNumber)">
                   {{ pageNumber }}
                 </button>
@@ -36,7 +36,7 @@ import { ListConfigType } from '../statics/list-config-type.enum';
       }
     }
   `,
-  imports: [ArticlePreviewComponent, NgClass, AsyncPipe],
+  imports: [ArticlePreviewComponent, AsyncPipe],
   styles: `
     .page-link {
       cursor: pointer;

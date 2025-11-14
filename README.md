@@ -9,23 +9,17 @@
 
 This codebase was created to demonstrate a fully fledged application built with Angular that interacts with an actual backend server including CRUD operations, authentication, routing, pagination, and more. We've gone to great lengths to adhere to the [Angular Styleguide](https://angular.io/styleguide) & best practices.
 
-Additionally, there is an Angular 1.5 version of this codebase that you can [fork](https://github.com/gothinkster/angularjs-realworld-example-app) and/or [learn how to recreate](https://thinkster.io/angularjs-es6-tutorial).
-
-# How it works
-
-We're currently working on some docs for the codebase (explaining where functionality is located, how it works, etc) but the codebase should be straightforward to follow as is. We've also released a [step-by-step tutorial w/ screencasts](https://thinkster.io/tutorials/building-real-world-angular-2-apps) that teaches you how to recreate the codebase from scratch.
-
 # Changelog
 
 This repo is forked from [gothinkster/angular-realworld-example-app](https://github.com/gothinkster/angular-realworld-example-app)
 
-1. Data fetched in reactive way - no snapshot, ngOnInit or subscribe() is used
+1. Data fetched in reactive way - no snapshot, ngOnInit or subscribe() is used when no needed
 2. Change detection strategy OnPush is used
 3. Created tags sidebar component
 4. All models are readonly - no mutability
 5. Submitting subscriptions uses take(1) instead of takeUntilDestroyed()
-6. inject() used instead of constructor
-7. removed profile-favorites component - it was duplicated profile-articles component with different filter
+6. inject() is used instead of constructor in components
+7. Removed profile-favorites component - it was duplicated profile-articles component with different filter
 
 ## TODO
 
@@ -37,6 +31,7 @@ This repo is forked from [gothinkster/angular-realworld-example-app](https://git
 6. remove zone.js
 7. dont use window directly
 8. remove inline types
+9. correct page components naming (SettingsComponent -> SettingsPage)
 
 # Getting started
 
@@ -81,7 +76,3 @@ The example application is a social blogging site (i.e. a Medium.com clone) call
 - Profile page (URL: /#/profile/:username, /#/profile/:username/favorites )
   - Show basic user info
   - List of articles populated from author's created articles or author's favorited articles
-
-<br />
-
-[![Brought to you by Thinkster](https://raw.githubusercontent.com/gothinkster/realworld/master/media/end.png)](https://thinkster.io)

@@ -15,7 +15,7 @@
               <li class="nav-item">
                 <a
                   class="nav-link"
-                  [ngClass]="{ active: listConfig.type === ListConfigType.FEED }"
+                  [class.active]="listConfig.type === ListConfigType.FEED"
                   (click)="setListTo(ListConfigType.FEED)"
                 >
                   Your Feed
@@ -24,9 +24,7 @@
               <li class="nav-item">
                 <a
                   class="nav-link"
-                  [ngClass]="{
-                    active: listConfig.type === ListConfigType.ALL && !listConfig.filters.tag,
-                  }"
+                  [class.active]="listConfig.type === ListConfigType.ALL && !listConfig.filters.tag"
                   (click)="setListTo(ListConfigType.ALL)"
                 >
                   Global Feed
