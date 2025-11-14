@@ -11,11 +11,11 @@ const routes: Routes = [
         children: [
           {
             path: '',
-            loadComponent: () => import('./components/profile-articles.component'),
+            loadComponent: () => import('./pages/profile-articles.page'),
           },
           {
             path: 'favorites',
-            loadComponent: () => import('./components/profile-articles.component'),
+            loadComponent: () => import('./pages/profile-articles.page'),
             data: { favorites: true },
           },
         ],

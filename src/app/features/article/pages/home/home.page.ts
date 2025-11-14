@@ -6,18 +6,18 @@ import { ArticleListComponent } from '../../components/article-list.component';
 import { take, tap } from 'rxjs/operators';
 import { UserService } from '../../../../core/auth/services/user.service';
 import { IfAuthenticatedDirective } from '../../../../core/auth/if-authenticated.directive';
-import { TagsSidebarComponent } from 'src/app/features/services/components/tags-sidebar.component';
 import { BehaviorSubject } from 'rxjs';
 import { ListConfigType } from '../../statics/list-config-type.enum';
+import { TagsSidebarComponent } from 'src/app/features/tags/components/tags-sidebar.component';
 
 @Component({
   selector: 'app-home-page',
-  templateUrl: './home.component.html',
-  styleUrls: ['./home.component.css'],
+  templateUrl: './home.page.html',
+  styleUrls: ['./home.page.css'],
   imports: [ArticleListComponent, IfAuthenticatedDirective, TagsSidebarComponent, AsyncPipe],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export default class HomeComponent {
+export default class HomePage {
   private readonly router = inject(Router);
   private readonly userService = inject(UserService);
 

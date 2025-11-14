@@ -1,9 +1,9 @@
 import { ChangeDetectionStrategy, Component, DestroyRef, inject, OnInit } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { UserService } from '../../core/auth/services/user.service';
-import { ListErrorsComponent } from '../../shared/components/list-errors.component';
-import { Errors } from '../../core/models/errors.model';
+import { UserService } from '../../../core/auth/services/user.service';
+import { ListErrorsComponent } from '../../../shared/components/list-errors.component';
+import { Errors } from '../../../core/models/errors.model';
 import { BehaviorSubject, take, tap } from 'rxjs';
 import { AsyncPipe } from '@angular/common';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -18,11 +18,11 @@ interface SettingsForm {
 
 @Component({
   selector: 'app-settings-page',
-  templateUrl: './settings.component.html',
+  templateUrl: './settings.page.html',
   imports: [ListErrorsComponent, ReactiveFormsModule, AsyncPipe],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export default class SettingsComponent implements OnInit {
+export default class SettingsPage implements OnInit {
   private readonly router = inject(Router);
   private readonly userService = inject(UserService);
   private readonly destroyRef = inject(DestroyRef);

@@ -1,6 +1,6 @@
-import { ChangeDetectionStrategy, Component, EventEmitter, inject, Output, output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, inject, Output } from '@angular/core';
 import { AsyncPipe } from '@angular/common';
-import { TagsService } from '../tags.service';
+import { TagsService } from '../services/tags.service';
 import { tap } from 'rxjs/internal/operators/tap';
 import { BehaviorSubject } from 'rxjs';
 

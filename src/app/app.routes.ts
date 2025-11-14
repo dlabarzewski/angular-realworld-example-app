@@ -7,23 +7,23 @@ import { AuthType } from './core/auth/statics/auth-type.enum';
 export const routes: Routes = [
   {
     path: '',
-    loadComponent: () => import('./features/article/pages/home/home.component'),
+    loadComponent: () => import('./features/article/pages/home/home.page'),
   },
   {
     path: 'login',
-    loadComponent: () => import('./core/auth/auth.component'),
+    loadComponent: () => import('./core/auth/pages/auth.page'),
     canActivate: [() => inject(UserService).isAuthenticated.pipe(map(isAuth => !isAuth))],
     data: { authType: AuthType.LOGIN },
   },
   {
     path: 'register',
-    loadComponent: () => import('./core/auth/auth.component'),
+    loadComponent: () => import('./core/auth/pages/auth.page'),
     canActivate: [() => inject(UserService).isAuthenticated.pipe(map(isAuth => !isAuth))],
     data: { authType: AuthType.REGISTER },
   },
   {
     path: 'settings',
-    loadComponent: () => import('./features/settings/settings.component'),
+    loadComponent: () => import('./features/settings/pages/settings.page'),
     canActivate: [() => inject(UserService).isAuthenticated],
   },
   {
@@ -35,18 +35,18 @@ export const routes: Routes = [
     children: [
       {
         path: '',
-        loadComponent: () => import('./features/article/pages/editor/editor.component'),
+        loadComponent: () => import('./features/article/pages/editor/editor.page'),
         canActivate: [() => inject(UserService).isAuthenticated],
       },
       {
         path: ':slug',
-        loadComponent: () => import('./features/article/pages/editor/editor.component'),
+        loadComponent: () => import('./features/article/pages/editor/editor.page'),
         canActivate: [() => inject(UserService).isAuthenticated],
       },
     ],
   },
   {
     path: 'article/:slug',
-    loadComponent: () => import('./features/article/pages/article/article.component'),
+    loadComponent: () => import('./features/article/pages/article/article.page'),
   },
 ];

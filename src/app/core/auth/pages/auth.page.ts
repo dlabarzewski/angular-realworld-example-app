@@ -1,12 +1,12 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { Validators, FormGroup, FormControl, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { ListErrorsComponent } from '../../shared/components/list-errors.component';
-import { Errors } from '../models/errors.model';
-import { UserService } from './services/user.service';
-import { BehaviorSubject, distinctUntilChanged, map, Observable, switchMap, take, tap } from 'rxjs';
+import { ListErrorsComponent } from '../../../shared/components/list-errors.component';
+import { Errors } from '../../models/errors.model';
+import { UserService } from '../services/user.service';
+import { BehaviorSubject, map, Observable, switchMap, take, tap } from 'rxjs';
 import { AsyncPipe } from '@angular/common';
-import { AuthType } from './statics/auth-type.enum';
+import { AuthType } from '../statics/auth-type.enum';
 
 interface AuthForm {
   readonly email: FormControl<string>;
@@ -16,11 +16,11 @@ interface AuthForm {
 
 @Component({
   selector: 'app-auth-page',
-  templateUrl: './auth.component.html',
+  templateUrl: './auth.page.html',
   imports: [RouterLink, ListErrorsComponent, ReactiveFormsModule, AsyncPipe],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export default class AuthComponent {
+export default class AuthPage {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly userService = inject(UserService);

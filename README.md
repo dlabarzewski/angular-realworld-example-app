@@ -20,18 +20,18 @@ This repo is forked from [gothinkster/angular-realworld-example-app](https://git
 5. Submitting subscriptions uses take(1) instead of takeUntilDestroyed()
 6. inject() is used instead of constructor in components
 7. Removed profile-favorites component - it was duplicated profile-articles component with different filter
+8. Removed NgClass usage
+9. Corrected page components naming (SettingsComponent -> SettingsPage) and directory structure
 
 ## TODO
 
-1. Split article page
 2. Article page duplicated app-article-meta
-3. Replace observables with signals
-4. remove NgClass
+3. Split article page
+4. remove inline types
 5. remove refresh subject
-6. remove zone.js
-7. dont use window directly
-8. remove inline types
-9. correct page components naming (SettingsComponent -> SettingsPage)
+6. dont use window directly
+7. remove zone.js
+8. Replace observables with signals
 
 # Getting started
 

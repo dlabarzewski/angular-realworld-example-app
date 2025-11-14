@@ -13,14 +13,14 @@ interface RouteData {
 }
 
 @Component({
-  selector: 'app-profile-articles',
+  selector: 'app-profile-articles-page',
   template: `@if (articlesConfig$ | async; as articlesConfig) {
     <app-article-list [limit]="10" [config]="articlesConfig" />
   }`,
   imports: [ArticleListComponent, AsyncPipe],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export default class ProfileArticlesComponent {
+export default class ProfileArticlesPage {
   private readonly route = inject(ActivatedRoute);
   private readonly profileService = inject(ProfileService);
 

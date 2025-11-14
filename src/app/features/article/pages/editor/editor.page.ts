@@ -17,11 +17,11 @@ interface ArticleForm {
 
 @Component({
   selector: 'app-editor-page',
-  templateUrl: './editor.component.html',
+  templateUrl: './editor.page.html',
   imports: [ListErrorsComponent, ReactiveFormsModule, AsyncPipe],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export default class EditorComponent implements OnInit {
+export default class EditorPage implements OnInit {
   private readonly destroyRef = inject(DestroyRef);
   private readonly articleService = inject(ArticlesService);
   private readonly route = inject(ActivatedRoute);

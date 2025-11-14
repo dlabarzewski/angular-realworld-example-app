@@ -22,7 +22,7 @@ import { User } from 'src/app/core/auth/user.model';
 
 @Component({
   selector: 'app-article-page',
-  templateUrl: './article.component.html',
+  templateUrl: './article.page.html',
   imports: [
     ArticleMetaComponent,
     RouterLink,
@@ -38,7 +38,7 @@ import { User } from 'src/app/core/auth/user.model';
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export default class ArticleComponent {
+export default class ArticlePage {
   private readonly route = inject(ActivatedRoute);
   private readonly articleService = inject(ArticlesService);
   private readonly commentsService = inject(CommentsService);
