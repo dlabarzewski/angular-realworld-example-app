@@ -10,9 +10,9 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { AsyncPipe } from '@angular/common';
 
 interface ArticleForm {
-  title: FormControl<string>;
-  description: FormControl<string>;
-  body: FormControl<string>;
+  readonly title: FormControl<string>;
+  readonly description: FormControl<string>;
+  readonly body: FormControl<string>;
 }
 
 @Component({

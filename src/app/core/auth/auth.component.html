@@ -17,7 +17,7 @@
           <form [formGroup]="authForm" (ngSubmit)="submitForm()">
             <fieldset [disabled]="isSubmitting$ | async">
               <fieldset class="form-group">
-                @if (authType === 'register') {
+                @if (authType === AuthType.REGISTER) {
                   <input
                     formControlName="username"
                     placeholder="Username"

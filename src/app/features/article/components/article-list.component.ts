@@ -64,11 +64,14 @@ export class ArticleListComponent {
   protected readonly results$: Observable<Article[]> = this.query$.pipe(
     tap(() => this.loadingSubject.next(LoadingState.LOADING)),
     switchMap(query => {
-      if (this.limit) {
-        query.filters.limit = this.limit;
-        query.filters.offset = this.limit * ((query.currentPage ?? 1) - 1);
-      }
-      return this.articlesService.query(query);
+      const queryFilters = this.limit
+        ? { ...query.filters, limit: this.limit, offset: this.limit * ((query.currentPage ?? 1) - 1) }
+        : query.filters;
+
+      return this.articlesService.query({
+        ...query,
+        filters: queryFilters,
+      });
     }),
     tap(data => {
       this.loadingSubject.next(LoadingState.LOADED);

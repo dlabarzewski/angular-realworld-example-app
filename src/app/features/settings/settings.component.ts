@@ -1,7 +1,6 @@
 import { ChangeDetectionStrategy, Component, DestroyRef, inject, OnInit } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { User } from '../../core/auth/user.model';
 import { UserService } from '../../core/auth/services/user.service';
 import { ListErrorsComponent } from '../../shared/components/list-errors.component';
 import { Errors } from '../../core/models/errors.model';
@@ -10,11 +9,11 @@ import { AsyncPipe } from '@angular/common';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 interface SettingsForm {
-  image: FormControl<string>;
-  username: FormControl<string>;
-  bio: FormControl<string>;
-  email: FormControl<string>;
-  password: FormControl<string>;
+  readonly image: FormControl<string>;
+  readonly username: FormControl<string>;
+  readonly bio: FormControl<string>;
+  readonly email: FormControl<string>;
+  readonly password: FormControl<string>;
 }
 
 @Component({

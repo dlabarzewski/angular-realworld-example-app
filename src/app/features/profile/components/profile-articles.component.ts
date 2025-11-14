@@ -9,7 +9,7 @@ import { combineLatest, map, Observable, switchMap } from 'rxjs';
 import { AsyncPipe } from '@angular/common';
 
 interface RouteData {
-  favorites?: boolean;
+  readonly favorites?: boolean;
 }
 
 @Component({

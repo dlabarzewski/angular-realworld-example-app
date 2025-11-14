@@ -8,7 +8,7 @@ export interface Article {
   readonly tagList: string[];
   readonly createdAt: string;
   readonly updatedAt: string;
-  favorited: boolean;
-  favoritesCount: number;
+  readonly favorited: boolean;
+  readonly favoritesCount: number;
   readonly author: Profile;
 }

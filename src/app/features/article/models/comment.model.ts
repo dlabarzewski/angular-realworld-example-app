@@ -1,8 +1,8 @@
 import { Profile } from '../../profile/models/profile.model';
 
 export interface Comment {
-  id: string;
-  body: string;
-  createdAt: string;
-  author: Profile;
+  readonly id: string;
+  readonly body: string;
+  readonly createdAt: string;
+  readonly author: Profile;
 }

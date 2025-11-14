@@ -1,13 +1,13 @@
 export interface ArticleListConfig {
-  type: string;
+  readonly type: string;
+  readonly filters: ArticleListFilters;
+  readonly currentPage?: number;
+}
 
-  filters: {
-    tag?: string;
-    author?: string;
-    favorited?: string;
-    limit?: number;
-    offset?: number;
-  };
-
-  currentPage?: number;
+interface ArticleListFilters {
+  readonly tag?: string;
+  readonly author?: string;
+  readonly favorited?: string;
+  readonly limit?: number;
+  readonly offset?: number;
 }

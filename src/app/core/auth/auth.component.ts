@@ -4,14 +4,14 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { ListErrorsComponent } from '../../shared/components/list-errors.component';
 import { Errors } from '../models/errors.model';
 import { UserService } from './services/user.service';
-import { BehaviorSubject, map, Observable, switchMap, take, tap } from 'rxjs';
+import { BehaviorSubject, distinctUntilChanged, map, Observable, switchMap, take, tap } from 'rxjs';
 import { AsyncPipe } from '@angular/common';
 import { AuthType } from './statics/auth-type.enum';
 
 interface AuthForm {
-  email: FormControl<string>;
-  password: FormControl<string>;
-  username?: FormControl<string>;
+  readonly email: FormControl<string>;
+  readonly password: FormControl<string>;
+  readonly username?: FormControl<string>;
 }
 
 @Component({
@@ -30,7 +30,9 @@ export default class AuthComponent {
   protected readonly authType$: Observable<string> = this.route.data.pipe(
     map(data => data['authType']),
     tap(authType => {
-      this.authForm.removeControl('username');
+      if (authType === AuthType.LOGIN) {
+        this.authForm.removeControl('username');
+      }
 
       if (authType === AuthType.REGISTER) {
         this.authForm.addControl(
@@ -65,12 +67,14 @@ export default class AuthComponent {
     this.isSubmittingSubject.next(true);
     this.errorsSubject.next(null);
 
+    const data = this.authForm.value;
+
     const observable = this.authType$.pipe(
       switchMap(authType =>
         authType === AuthType.LOGIN
-          ? this.userService.login(this.authForm.value as { email: string; password: string })
+          ? this.userService.login(data as { email: string; password: string })
           : this.userService.register(
-              this.authForm.value as {
+              data as {
                 email: string;
                 password: string;
                 username: string;

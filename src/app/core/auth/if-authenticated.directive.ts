@@ -7,15 +7,13 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
   standalone: true,
 })
 export class IfAuthenticatedDirective<T> implements OnInit {
-  destroyRef = inject(DestroyRef);
-  constructor(
-    private templateRef: TemplateRef<T>,
-    private userService: UserService,
-    private viewContainer: ViewContainerRef,
-  ) {}
+  private readonly destroyRef = inject(DestroyRef);
+  private readonly templateRef = inject<TemplateRef<T>>(TemplateRef);
+  private readonly userService = inject(UserService);
+  private readonly viewContainer = inject(ViewContainerRef);
 
-  condition: boolean = false;
-  hasView = false;
+  private condition: boolean = false;
+  private hasView = false;
 
   ngOnInit() {
     this.userService.isAuthenticated.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((isAuthenticated: boolean) => {

@@ -1,3 +1,3 @@
 export interface Errors {
-  errors: { [key: string]: string };
+  readonly errors: Record<string, string>;
 }

@@ -11,5 +11,5 @@ import { IfAuthenticatedDirective } from '../auth/if-authenticated.directive';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HeaderComponent {
-  currentUser$ = inject(UserService).currentUser;
+  protected readonly currentUser$ = inject(UserService).currentUser;
 }
