@@ -24,15 +24,18 @@ This repo is forked from [gothinkster/angular-realworld-example-app](https://git
 9. Corrected page components naming (SettingsComponent -> SettingsPage) and directory structure
 10. Created article-settings component, in article page used template outlet to reuse html
 11. Removed direct window usage (localStorage)
-12. Created editor-form component - data in component is set by @Input(), page gets data by async pipe, so there is no need to use subscribe() in ngOnInit
+12. Created editor-form component - data in component is set by @Input(), page gets data by async pipe, so there is no need to use subscribe() in ngOnInit, use event.preventDefault in tags input
+13. Created settings-form, like above
 
 ## TODO
 
-3. Split article page
-4. remove inline types
-5. remove zone.js
-6. Replace observables with signals
-7. form dumb components - (ngSubmit) instead of submit button (click)
+1. Split article page
+2. remove inline types
+3. blank page on 401 /user get
+4. Check article update tags
+5. remove features coupling
+6. remove zone.js
+7. Replace observables with signals
 
 # Getting started
 

@@ -9,10 +9,10 @@ import { Router } from '@angular/router';
 
 @Injectable({ providedIn: 'root' })
 export class UserService {
-  private currentUserSubject = new BehaviorSubject<User | null>(null);
-  public currentUser = this.currentUserSubject.asObservable().pipe(distinctUntilChanged());
+  private readonly currentUserSubject = new BehaviorSubject<User | null>(null);
+  public readonly currentUser = this.currentUserSubject.asObservable().pipe(distinctUntilChanged());
 
-  public isAuthenticated = this.currentUser.pipe(map(user => !!user));
+  public readonly isAuthenticated = this.currentUser.pipe(map(user => !!user));
 
   constructor(
     private readonly http: HttpClient,
