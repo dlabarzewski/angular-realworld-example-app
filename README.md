@@ -22,16 +22,16 @@ This repo is forked from [gothinkster/angular-realworld-example-app](https://git
 7. Removed profile-favorites component - it was duplicated profile-articles component with different filter
 8. Removed NgClass usage
 9. Corrected page components naming (SettingsComponent -> SettingsPage) and directory structure
+10. Created article-settings component, in article page used template outlet to reuse html
 
 ## TODO
 
-2. Article page duplicated app-article-meta
 3. Split article page
 4. remove inline types
-5. remove refresh subject
-6. dont use window directly
-7. remove zone.js
-8. Replace observables with signals
+5. dont use window directly
+6. remove zone.js
+7. Replace observables with signals
+8. take(1) should be last
 
 # Getting started
 

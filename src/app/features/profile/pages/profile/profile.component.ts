@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
-import { catchError, map, switchMap } from 'rxjs/operators';
-import { BehaviorSubject, combineLatest, Observable, throwError } from 'rxjs';
+import { catchError, map, shareReplay, switchMap } from 'rxjs/operators';
+import { combineLatest, merge, Observable, Subject, throwError } from 'rxjs';
 import { UserService } from '../../../../core/auth/services/user.service';
 import { Profile } from '../../models/profile.model';
 import { ProfileService } from '../../services/profile.service';
@@ -20,20 +20,22 @@ export class ProfileComponent {
   private readonly userService = inject(UserService);
   private readonly profileService = inject(ProfileService);
 
-  private readonly refreshSubject = new BehaviorSubject<void>(undefined);
-
-  protected readonly profile$: Observable<Profile> = combineLatest([this.route.params, this.refreshSubject]).pipe(
-    switchMap(([params]) => this.profileService.get(params['username'])),
+  private readonly profileSubject = new Subject<Profile>();
+  private readonly profileData$: Observable<Profile> = this.route.params.pipe(
+    switchMap(params => this.profileService.get(params['username'])),
     catchError(error => {
       void this.router.navigate(['/']);
       return throwError(() => error);
     }),
+    shareReplay(1),
   );
-  protected isUser$: Observable<boolean> = combineLatest([this.profile$, this.userService.currentUser]).pipe(
+  protected readonly profile$ = merge(this.profileData$, this.profileSubject.asObservable());
+
+  protected readonly isUser$: Observable<boolean> = combineLatest([this.profile$, this.userService.currentUser]).pipe(
     map(([profile, user]) => profile.username === user?.username),
   );
 
   onToggleFollowing(profile: Profile) {
-    this.refreshSubject.next();
+    this.profileSubject.next(profile);
   }
 }

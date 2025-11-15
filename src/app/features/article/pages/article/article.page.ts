@@ -10,8 +10,8 @@ import { AsyncPipe, NgTemplateOutlet } from '@angular/common';
 import { MarkdownPipe } from '../../../../shared/pipes/markdown.pipe';
 import { ListErrorsComponent } from '../../../../shared/components/list-errors.component';
 import { ArticleCommentComponent } from '../../components/article-comment.component';
-import { catchError, map, switchMap, take } from 'rxjs/operators';
-import { BehaviorSubject, combineLatest, Observable, throwError } from 'rxjs';
+import { catchError, map, shareReplay, switchMap, take, tap } from 'rxjs/operators';
+import { BehaviorSubject, combineLatest, merge, Observable, Subject, throwError } from 'rxjs';
 import { Comment } from '../../models/comment.model';
 import { Errors } from '../../../../core/models/errors.model';
 import { Profile } from '../../../profile/models/profile.model';
@@ -46,28 +46,29 @@ export default class ArticlePage {
   private readonly router = inject(Router);
   private readonly userService = inject(UserService);
 
-  private readonly refreshSubject = new BehaviorSubject<void>(undefined);
-  protected readonly article$: Observable<Article> = combineLatest([this.route.params, this.refreshSubject]).pipe(
-    switchMap(([params]) => this.articleService.get(params['slug'])),
+  private readonly articleSubject = new Subject<Article>();
+  private readonly articleData$: Observable<Article> = this.route.params.pipe(
+    switchMap(params => this.articleService.get(params['slug'])),
     catchError(err => {
       void this.router.navigate(['/']);
       return throwError(() => err);
     }),
+    shareReplay(1),
   );
+  protected readonly article$: Observable<Article> = merge(this.articleData$, this.articleSubject.asObservable());
 
   protected readonly currentUser$: Observable<User | null> = this.userService.currentUser;
 
   protected readonly canModify$: Observable<boolean> = combineLatest([this.article$, this.currentUser$]).pipe(
-    map(([article, currentUser]) => {
-      return currentUser?.username === article.author.username;
-    }),
+    map(([article, currentUser]) => currentUser?.username === article.author.username),
   );
 
-  private readonly commentsRefreshSubject = new BehaviorSubject<void>(undefined);
-  protected readonly comments$: Observable<Comment[]> = combineLatest([
-    this.route.params,
-    this.commentsRefreshSubject,
-  ]).pipe(switchMap(([params]) => this.commentsService.getAll(params['slug'])));
+  private readonly commentsSubject = new Subject<Comment[]>();
+  private readonly commentsData$: Observable<Comment[]> = this.route.params.pipe(
+    switchMap(params => this.commentsService.getAll(params['slug'])),
+    shareReplay(1),
+  );
+  protected readonly comments$ = merge(this.commentsData$, this.commentsSubject.asObservable());
 
   protected readonly commentControl = new FormControl<string>('', { nonNullable: true });
 
@@ -81,11 +82,35 @@ export default class ArticlePage {
   protected readonly isDeleting$ = this.isDeletingSubject.asObservable();
 
   onToggleFavorite(favorited: boolean): void {
-    this.refreshSubject.next();
+    this.article$
+      .pipe(
+        tap(article => {
+          this.articleSubject.next({
+            ...article,
+            favorited: favorited,
+            favoritesCount: favorited ? article.favoritesCount + 1 : article.favoritesCount - 1,
+          });
+        }),
+        take(1),
+      )
+      .subscribe();
   }
 
   toggleFollowing(profile: Profile): void {
-    this.refreshSubject.next();
+    this.article$
+      .pipe(
+        tap(article => {
+          this.articleSubject.next({
+            ...article,
+            author: {
+              ...article.author,
+              following: profile.following,
+            },
+          });
+        }),
+        take(1),
+      )
+      .subscribe();
   }
 
   deleteArticle(): void {
@@ -105,14 +130,20 @@ export default class ArticlePage {
     this.isSubmittingSubject.next(true);
     this.commentFormErrorsSubject.next(null);
 
-    this.article$
+    combineLatest([this.article$, this.comments$])
       .pipe(
-        switchMap(article => this.commentsService.add(article.slug, this.commentControl.value)),
+        switchMap(([article, comments]) =>
+          this.commentsService.add(article.slug, this.commentControl.value).pipe(
+            tap(comment => {
+              const updatedComments = [comment, ...comments];
+              this.commentsSubject.next(updatedComments);
+            }),
+          ),
+        ),
         take(1),
       )
       .subscribe({
-        next: comment => {
-          this.commentsRefreshSubject.next();
+        next: () => {
           this.commentControl.reset('');
           this.isSubmittingSubject.next(false);
         },
@@ -124,13 +155,18 @@ export default class ArticlePage {
   }
 
   deleteComment(comment: Comment): void {
-    this.article$
+    combineLatest([this.article$, this.comments$])
       .pipe(
-        switchMap(article => this.commentsService.delete(comment.id, article.slug)),
+        switchMap(([article, comments]) =>
+          this.commentsService.delete(comment.id, article.slug).pipe(
+            tap(() => {
+              const updatedComments = comments.filter(c => c.id !== comment.id);
+              this.commentsSubject.next(updatedComments);
+            }),
+          ),
+        ),
         take(1),
       )
-      .subscribe(() => {
-        this.commentsRefreshSubject.next();
-      });
+      .subscribe();
   }
 }
