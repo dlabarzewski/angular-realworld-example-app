@@ -31,7 +31,6 @@ This repo is forked from [gothinkster/angular-realworld-example-app](https://git
 5. dont use window directly
 6. remove zone.js
 7. Replace observables with signals
-8. take(1) should be last
 
 # Getting started
 

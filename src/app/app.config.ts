@@ -9,6 +9,7 @@ import { apiInterceptor } from './core/interceptors/api.interceptor';
 import { tokenInterceptor } from './core/interceptors/token.interceptor';
 import { errorInterceptor } from './core/interceptors/error.interceptor';
 import { EMPTY } from 'rxjs';
+import { provideLocalStorage } from './core/providers/storage.provider';
 
 export function initAuth(jwtService: JwtService, userService: UserService) {
   return () => (jwtService.getToken() ? userService.getCurrentUser() : EMPTY);
@@ -22,5 +23,6 @@ export const appConfig: ApplicationConfig = {
       const initializerFn = initAuth(inject(JwtService), inject(UserService));
       return initializerFn();
     }),
+    provideLocalStorage(),
   ],
 };
