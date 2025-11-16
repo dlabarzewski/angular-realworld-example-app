@@ -35,8 +35,8 @@ export default class EditorPage {
       }
       return EMPTY;
     }),
-    tap(([article, { user }]) => {
-      if (user.username !== article.author.username) {
+    tap(([article, user]) => {
+      if (user?.user.username !== article.author.username) {
         void this.router.navigate(['/']);
       }
     }),

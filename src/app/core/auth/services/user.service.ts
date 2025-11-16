@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
-import { Observable, BehaviorSubject } from 'rxjs';
+import { Observable, BehaviorSubject, EMPTY, of } from 'rxjs';
 
 import { JwtService } from './jwt.service';
-import { map, distinctUntilChanged, tap, shareReplay } from 'rxjs/operators';
+import { map, distinctUntilChanged, tap, shareReplay, catchError } from 'rxjs/operators';
 import { HttpClient } from '@angular/common/http';
 import { User } from '../user.model';
 import { Router } from '@angular/router';
@@ -35,11 +35,12 @@ export class UserService {
     void this.router.navigate(['/']);
   }
 
-  getCurrentUser(): Observable<{ user: User }> {
+  getCurrentUser(): Observable<{ user: User } | null> {
     return this.http.get<{ user: User }>('/user').pipe(
-      tap({
-        next: ({ user }) => this.setAuth(user),
-        error: () => this.purgeAuth(),
+      tap(({ user }) => this.setAuth(user)),
+      catchError(() => {
+        this.purgeAuth();
+        return of(null);
       }),
       shareReplay(1),
     );

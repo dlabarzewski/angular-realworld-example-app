@@ -20,7 +20,7 @@ export class CommentsService {
       .pipe(map(data => data.comment));
   }
 
-  delete(commentId: string, slug: string): Observable<void> {
+  delete(slug: string, commentId: string): Observable<void> {
     return this.http.delete<void>(`/articles/${slug}/comments/${commentId}`);
   }
 }

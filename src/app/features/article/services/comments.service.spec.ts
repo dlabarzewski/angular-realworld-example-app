@@ -266,7 +266,7 @@ describe('CommentsService', () => {
     it('should delete a comment', async () => {
       const slug = 'test-article';
       const commentId = '123';
-      const promise = firstValueFrom(service.delete(commentId, slug));
+      const promise = firstValueFrom(service.delete(slug, commentId));
       const req = httpMock.expectOne(`/articles/${slug}/comments/${commentId}`);
       expect(req.request.method).toBe('DELETE');
       req.flush(null);
@@ -278,7 +278,7 @@ describe('CommentsService', () => {
       const slug = 'test-article';
       const commentId = 'nonexistent';
       const errorResponse = { status: 404, statusText: 'Not Found' };
-      const promise = firstValueFrom(service.delete(commentId, slug));
+      const promise = firstValueFrom(service.delete(slug, commentId));
       const req = httpMock.expectOne(`/articles/${slug}/comments/${commentId}`);
       req.flush('Comment not found', errorResponse);
       await expect(promise).rejects.toMatchObject({ status: 404 });
@@ -288,7 +288,7 @@ describe('CommentsService', () => {
       const slug = 'test-article';
       const commentId = '123';
       const errorResponse = { status: 403, statusText: 'Forbidden' };
-      const promise = firstValueFrom(service.delete(commentId, slug));
+      const promise = firstValueFrom(service.delete(slug, commentId));
       const req = httpMock.expectOne(`/articles/${slug}/comments/${commentId}`);
       req.flush('Cannot delete this comment', errorResponse);
       await expect(promise).rejects.toMatchObject({ status: 403 });
@@ -298,7 +298,7 @@ describe('CommentsService', () => {
       const slug = 'test-article';
       const commentId = '123';
       const errorResponse = { status: 401, statusText: 'Unauthorized' };
-      const promise = firstValueFrom(service.delete(commentId, slug));
+      const promise = firstValueFrom(service.delete(slug, commentId));
       const req = httpMock.expectOne(`/articles/${slug}/comments/${commentId}`);
       req.flush('Must be logged in', errorResponse);
       await expect(promise).rejects.toMatchObject({ status: 401 });
@@ -307,7 +307,7 @@ describe('CommentsService', () => {
     it('should handle numeric comment ID', () => {
       const slug = 'test-article';
       const commentId = '456';
-      service.delete(commentId, slug).subscribe();
+      service.delete(slug, commentId).subscribe();
       const req = httpMock.expectOne(`/articles/${slug}/comments/${commentId}`);
       req.flush(null);
     });
@@ -315,7 +315,7 @@ describe('CommentsService', () => {
     it('should handle UUID comment ID', () => {
       const slug = 'test-article';
       const commentId = '550e8400-e29b-41d4-a716-446655440000';
-      service.delete(commentId, slug).subscribe();
+      service.delete(slug, commentId).subscribe();
       const req = httpMock.expectOne(`/articles/${slug}/comments/${commentId}`);
       req.flush(null);
     });
@@ -330,7 +330,7 @@ describe('CommentsService', () => {
       addReq.flush({ comment: mockComment });
       const comment = await addPromise;
       expect(comment.body).toBe(commentBody);
-      const deletePromise = firstValueFrom(service.delete(comment.id, slug));
+      const deletePromise = firstValueFrom(service.delete(slug, comment.id));
       const deleteReq = httpMock.expectOne(`/articles/${slug}/comments/${comment.id}`);
       deleteReq.flush(null);
       await deletePromise;

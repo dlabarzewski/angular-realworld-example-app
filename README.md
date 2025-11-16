@@ -15,27 +15,27 @@ This repo is forked from [gothinkster/angular-realworld-example-app](https://git
 
 1. Data fetched in reactive way - no snapshot, ngOnInit or subscribe() is used when no needed
 2. Change detection strategy OnPush is used
-3. Created tags sidebar component
+3. Created tags-sidebar component
 4. All models are readonly - no mutability
 5. Submitting subscriptions uses take(1) instead of takeUntilDestroyed()
 6. inject() is used instead of constructor in components
 7. Removed profile-favorites component - it was duplicated profile-articles component with different filter
 8. Removed NgClass usage
 9. Corrected page components naming (SettingsComponent -> SettingsPage) and directory structure
-10. Created article-settings component, in article page used template outlet to reuse html
+10. Article page divided into smaller components, used template outlet to reuse html
 11. Removed direct window usage (localStorage)
 12. Created editor-form component - data in component is set by @Input(), page gets data by async pipe, so there is no need to use subscribe() in ngOnInit, use event.preventDefault in tags input
 13. Created settings-form, like above
 
 ## TODO
 
-1. Split article page
 2. remove inline types
 3. blank page on 401 /user get
 4. Check article update tags
 5. remove features coupling
 6. remove zone.js
 7. Replace observables with signals
+8. Create paths for features: @feature/article
 
 # Getting started
 

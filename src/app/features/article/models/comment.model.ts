@@ -4,5 +4,6 @@ export interface Comment {
   readonly id: string;
   readonly body: string;
   readonly createdAt: string;
+  readonly updatedAt: string;
   readonly author: Profile;
 }

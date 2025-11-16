@@ -1,85 +1,54 @@
 @if (article$ | async; as article) {
-<div class="article-page">
-  <div class="banner">
-    <div class="container">
-      <h1>{{ article.title }}</h1>
+  <div class="article-page">
+    <div class="banner">
+      <div class="container">
+        <h1>{{ article.title }}</h1>
 
-      <ng-container *ngTemplateOutlet="articleMeta; context: { $implicit: article }"></ng-container>
-    </div>
-  </div>
-
-  <div class="container page">
-    <div class="row article-content">
-      <div class="col-md-12">
-        <div [innerHTML]="article.body | markdown | async"></div>
-
-        <ul class="tag-list">
-          @for (tag of article.tagList; track tag) {
-          <li class="tag-default tag-pill tag-outline">{{ tag }}</li>
-          }
-        </ul>
+        <ng-container *ngTemplateOutlet="articleMeta; context: { $implicit: article }"></ng-container>
       </div>
     </div>
 
-    <hr />
+    <div class="container page">
+      <div class="row article-content">
+        <div class="col-md-12">
+          <div [innerHTML]="article.body | markdown | async"></div>
 
-    <div class="article-actions">
-      <ng-container *ngTemplateOutlet="articleMeta; context: { $implicit: article }"></ng-container>
-    </div>
+          <ul class="tag-list">
+            @for (tag of article.tagList; track tag) {
+              <li class="tag-default tag-pill tag-outline">{{ tag }}</li>
+            }
+          </ul>
+        </div>
+      </div>
 
-    <div class="row">
-      <div class="col-xs-12 col-md-8 offset-md-2">
-        @if (currentUser$ | async) {
-        <div>
-          <app-list-errors [errors]="commentFormErrors$ | async" />
-          <form class="card comment-form" (ngSubmit)="addComment()">
-            <fieldset [disabled]="isSubmitting$ | async">
-              <div class="card-block">
-                <textarea
-                  class="form-control"
-                  placeholder="Write a comment..."
-                  rows="3"
-                  [formControl]="commentControl"
-                ></textarea>
-              </div>
-              <div class="card-footer">
-                @if (currentUser$ | async; as currentUser) {
-                <img [src]="currentUser?.image ?? ''" class="comment-author-img" />
-                } @else {
-                <img src="" class="comment-author-img" />
-                }
-                <button class="btn btn-sm btn-primary" type="submit">Post Comment</button>
-              </div>
-            </fieldset>
-          </form>
+      <hr />
+
+      <div class="article-actions">
+        <ng-container *ngTemplateOutlet="articleMeta; context: { $implicit: article }"></ng-container>
+      </div>
+
+      <div class="row">
+        <div class="col-xs-12 col-md-8 offset-md-2">
+          <app-article-comments [currentUser]="currentUser$ | async" [articleSlug]="article.slug" />
         </div>
-        } @else {
-        <div>
-          <a [routerLink]="['/login']">Sign in</a> or <a [routerLink]="['/register']">sign up</a> to add comments on
-          this article.
-        </div>
-        } @for (comment of comments$ | async; track comment) {
-        <app-article-comment [comment]="comment" (delete)="deleteComment(comment)" />
-        }
       </div>
     </div>
   </div>
-</div>
 }
 
 <ng-template #articleMeta let-article>
   <app-article-meta [article]="article">
     @if (canModify$ | async) {
-    <app-article-settings [article]="article" [deleteDisabled]="!!(isDeleting$ | async)" (delete)="deleteArticle()" />
+      <app-article-settings [article]="article" />
     } @else {
-    <span>
-      <app-follow-button [profile]="article.author" (toggle)="toggleFollowing($event)" />
+      <span>
+        <app-follow-button [profile]="article.author" (toggle)="toggleFollowing($event)" />
 
-      <app-favorite-button [article]="article" (toggle)="onToggleFavorite($event)">
-        {{ article.favorited ? 'Unfavorite' : 'Favorite' }} Article
-        <span class="counter">({{ article.favoritesCount }})</span>
-      </app-favorite-button>
-    </span>
+        <app-favorite-button [article]="article" (toggle)="onToggleFavorite($event)">
+          {{ article.favorited ? 'Unfavorite' : 'Favorite' }} Article
+          <span class="counter">({{ article.favoritesCount }})</span>
+        </app-favorite-button>
+      </span>
     }
   </app-article-meta>
 </ng-template>
